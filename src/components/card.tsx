@@ -1,4 +1,5 @@
 import { Card, IconButton, Stack, Text } from "@chakra-ui/react";
+import { FaEye } from "react-icons/fa";
 import { LuX } from "react-icons/lu";
 import { MdOutlineEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ interface StyledCardProps {
   content: string[];
   cancelButtonFunction: React.Dispatch<React.SetStateAction<boolean>>;
   editButtonFunction?: React.Dispatch<React.SetStateAction<boolean>>;
+  viewAddress?: string | undefined;
   redirectAddress?: string | undefined;
   setCurrentItem: React.Dispatch<React.SetStateAction<any>>;
   item: object;
@@ -18,6 +20,7 @@ export default function StyledCard({
   content,
   cancelButtonFunction,
   editButtonFunction,
+  viewAddress,
   redirectAddress,
   setCurrentItem,
   item,
@@ -51,17 +54,32 @@ export default function StyledCard({
         </Stack>
       </Card.Body>
       <Card.Footer justifyContent="center">
-        <IconButton
-          aria-label="Edit item"
-          variant="outline"
-          _hover={{ bgColor: "primary" }}
-          onClick={() => {
-            setCurrentItem(item);
-            onClickEdit();
-          }}
-        >
-          <MdOutlineEdit color="white" />
-        </IconButton>
+        {viewAddress !== undefined && (
+          <IconButton
+            aria-label="View item"
+            variant="outline"
+            _hover={{ bgColor: "primary" }}
+            onClick={() => {
+              setCurrentItem(item);
+              navigate(viewAddress, { state: item });
+            }}
+          >
+            <FaEye color="white" />
+          </IconButton>
+        )}
+        {(redirectAddress !== undefined || editButtonFunction) && (
+          <IconButton
+            aria-label="Edit item"
+            variant="outline"
+            _hover={{ bgColor: "primary" }}
+            onClick={() => {
+              setCurrentItem(item);
+              onClickEdit();
+            }}
+          >
+            <MdOutlineEdit color="white" />
+          </IconButton>
+        )}
         <IconButton
           aria-label="Remove item"
           variant="outline"

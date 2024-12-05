@@ -25,4 +25,10 @@ const deleteAsset = createRequestConfig({
   headers: { Authorization: `Basic ${token}` },
 });
 
-export { fetchAssets, createAsset, updateAsset, deleteAsset };
+const readAsset = createRequestConfig({
+  url: "query/readAsset",
+  method: "POST",
+  headers: { Authorization: `Basic ${token}` },
+});
+
+export { fetchAssets, createAsset, updateAsset, deleteAsset, readAsset };

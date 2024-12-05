@@ -1,25 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Navbar from "../../components/navbar";
-import {
-  Box,
-  createListCollection,
-  Flex,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Input, Stack, Text } from "@chakra-ui/react";
 import { sendRequest } from "../../services/request";
 import { toaster, Toaster } from "../../components/toaster";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Field } from "../../components/field";
-import { fetchAssets, updateAsset } from "../../services/assets";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "../../components/select";
+import { updateAsset } from "../../services/assets";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,14 +13,12 @@ import { DataListItem, DataListRoot } from "../../components/data-list";
 import { Button } from "../../components/button";
 
 const formSchema = z.object({
-  artistKey: z.string().array(),
   year: z.coerce.string(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 const EditAlbum = () => {
-  const [artists, setArtists] = useState<Artist[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const location = useLocation();
   const currentAlbum: CompleteAlbumInfo = location.state || {};
@@ -44,12 +28,10 @@ const EditAlbum = () => {
     register,
     handleSubmit,
     formState: { errors },
-    control,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       year: currentAlbum?.year,
-      artistKey: [currentAlbum?.artist?.["@key"]],
     },
   });
 
@@ -76,46 +58,6 @@ const EditAlbum = () => {
     }
   }, []);
 
-  const handleFetchArtists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "artist",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setArtists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artists!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const artistsList = useMemo(() => {
-    if (artists !== null) {
-      return createListCollection({
-        items: artists?.map((artist: Artist) => ({
-          label: artist.name,
-          value: artist["@key"],
-        })),
-      });
-    }
-    return createListCollection({
-      items: [{ label: "", value: "" }],
-    });
-  }, [artists]);
-
-  useEffect(() => {
-    handleFetchArtists();
-  }, []);
-
   const onSubmit = handleSubmit((data) => {
     setIsLoading(true);
     const payload: UpdateAlbumPayload = {
@@ -132,10 +74,6 @@ const EditAlbum = () => {
 
     if (data?.year && data?.year !== "0") {
       payload.update.year = Number(data.year);
-    }
-
-    if (data?.artistKey) {
-      payload.update.artist["@key"] = data.artistKey[0];
     }
 
     handleEditAlbum(payload);
@@ -183,37 +121,7 @@ const EditAlbum = () => {
                 {...register("year")}
               />
             </Field>
-            <Field
-              label="Artist"
-              invalid={!!errors.artistKey}
-              errorText={errors.artistKey?.message}
-            >
-              <Controller
-                control={control}
-                name="artistKey"
-                render={({ field }) => (
-                  <SelectRoot
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={({ value }) => field.onChange(value)}
-                    onInteractOutside={() => field.onBlur()}
-                    collection={artistsList}
-                    variant="subtle"
-                  >
-                    <SelectTrigger>
-                      <SelectValueText placeholder="Select artist" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {artistsList.items.map((artist) => (
-                        <SelectItem item={artist} key={artist!.value}>
-                          {artist.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </SelectRoot>
-                )}
-              />
-            </Field>
+
             <Flex gap="4" justifyContent="center">
               <Button
                 variant="outline"
