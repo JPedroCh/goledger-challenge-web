@@ -25,9 +25,10 @@ const Home = () => {
         borderRadius={"50px"}
         _hover={{
           transform: "scale(1.01)",
-          bgColor: "tertiary",
+          bgColor: "primary",
+          color: "white",
         }}
-        onClick={() => navigate("/groove")}
+        onClick={() => navigate("/artists")}
       >
         Groove to your favorite sound!
       </Button>

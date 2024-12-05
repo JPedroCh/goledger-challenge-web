@@ -20,11 +20,11 @@ export const system = createSystem(defaultConfig, {
       gradients: {
         linearGradient: {
           value:
-            "linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 29%, rgba(142,143,250,1) 100%)",
+            "linear-gradient(27deg, rgba(194,217,255,1) 0%, rgba(247,94,49,1) 50%, rgba(142,143,250,1) 100%);",
         },
         radialGradient: {
           value:
-            "radial-gradient(circle, rgba(119,82,254,1) 0%, rgba(142,143,250,1) 50%, rgba(25,4,130,1) 85%)",
+            "radial-gradient(circle, rgba(194,217,255,1) 0%, rgba(247,94,49,1) 50%, rgba(142,143,250,1) 100%);",
         },
       },
       borders: {
