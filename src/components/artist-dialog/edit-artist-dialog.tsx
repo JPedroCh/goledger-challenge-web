@@ -1,4 +1,4 @@
-import { Button, Input, Stack } from "@chakra-ui/react";
+import { Input, Stack } from "@chakra-ui/react";
 import {
   DialogActionTrigger,
   DialogBody,
@@ -9,12 +9,15 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Field } from "../field";
-import { useCallback, useRef } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DataListItem, DataListRoot } from "../data-list";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
 import { updateAsset } from "../../services/assets";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../button";
 
 interface EditArtistDialogProps {
   open: boolean;
@@ -23,10 +26,11 @@ interface EditArtistDialogProps {
   refreshPage: () => void;
 }
 
-interface FormValues {
-  name: string;
-  country: string;
-}
+const formSchema = z.object({
+  country: z.string().min(2, { message: "Country is required" }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function EditArtistDialog({
   open,
@@ -34,7 +38,7 @@ export default function EditArtistDialog({
   artist,
   refreshPage,
 }: EditArtistDialogProps) {
-  const ref = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     register,
@@ -42,15 +46,18 @@ export default function EditArtistDialog({
     formState: { errors },
     resetField,
   } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      name: artist?.name,
       country: artist?.country,
     },
   });
 
   const handleUpdateArtist = useCallback(
     async (payload: UpdateArtistPayload) => {
-      const response = await sendRequest<Result<Artist>>(updateAsset(payload));
+      const response = await sendRequest<RequestResult<Artist>>(
+        updateAsset(payload)
+      );
+      setIsLoading(false);
 
       if (response.type === "success") {
         toaster.success({
@@ -73,6 +80,7 @@ export default function EditArtistDialog({
   );
 
   const onSubmit = handleSubmit((data) => {
+    setIsLoading(true);
     const payload: UpdateArtistPayload = {
       update: {
         "@assetType": "artist",
@@ -87,8 +95,6 @@ export default function EditArtistDialog({
   return (
     <DialogRoot
       key={artist?.["@key"]}
-      initialFocusEl={() => ref.current}
-      lazyMount
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
     >
@@ -99,20 +105,9 @@ export default function EditArtistDialog({
         <form onSubmit={onSubmit} id="edit-artist-form">
           <DialogBody pb="4">
             <Stack gap="4">
-              <Field
-                label="Name"
-                invalid={!!errors.name}
-                errorText={errors.name?.message}
-              >
-                <Input
-                  placeholder="Insert the artist's name"
-                  variant="subtle"
-                  color="black"
-                  value={artist?.name}
-                  disabled
-                  {...register("name")}
-                />
-              </Field>
+              <DataListRoot orientation="vertical" mb={4}>
+                <DataListItem label="Current Name" value={artist?.name} />
+              </DataListRoot>
               <DataListRoot orientation="vertical" mb={4}>
                 <DataListItem label="Current Country" value={artist?.country} />
               </DataListRoot>
@@ -125,7 +120,7 @@ export default function EditArtistDialog({
                   placeholder="Insert the artist's country"
                   variant="subtle"
                   color="black"
-                  {...register("country", { required: "Country is required" })}
+                  {...register("country")}
                 />
               </Field>
             </Stack>
@@ -135,6 +130,8 @@ export default function EditArtistDialog({
               <Button
                 variant="outline"
                 _hover={{ bgColor: "red", color: "white" }}
+                onClick={() => resetField("country")}
+                loading={isLoading}
               >
                 Cancel
               </Button>

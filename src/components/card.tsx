@@ -1,12 +1,14 @@
 import { Card, IconButton, Stack, Text } from "@chakra-ui/react";
 import { LuX } from "react-icons/lu";
 import { MdOutlineEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 interface StyledCardProps {
   title: string;
   content: string[];
   cancelButtonFunction: React.Dispatch<React.SetStateAction<boolean>>;
-  editButtonFunction: React.Dispatch<React.SetStateAction<boolean>>;
+  editButtonFunction?: React.Dispatch<React.SetStateAction<boolean>>;
+  redirectAddress?: string | undefined;
   setCurrentItem: React.Dispatch<React.SetStateAction<any>>;
   item: object;
 }
@@ -16,9 +18,20 @@ export default function StyledCard({
   content,
   cancelButtonFunction,
   editButtonFunction,
+  redirectAddress,
   setCurrentItem,
   item,
 }: StyledCardProps) {
+  const navigate = useNavigate();
+
+  const onClickEdit = () => {
+    if (redirectAddress !== undefined) {
+      return navigate(redirectAddress, { state: item });
+    } else if (editButtonFunction) {
+      return editButtonFunction(true);
+    }
+  };
+
   return (
     <Card.Root
       width="200px"
@@ -44,7 +57,7 @@ export default function StyledCard({
           _hover={{ bgColor: "primary" }}
           onClick={() => {
             setCurrentItem(item);
-            editButtonFunction(true);
+            onClickEdit();
           }}
         >
           <MdOutlineEdit color="white" />

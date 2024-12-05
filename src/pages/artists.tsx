@@ -12,16 +12,15 @@ import { fetchAssets } from "../services/assets";
 import DeleteArtistDialog from "../components/artist-dialog/delete-artist-dialog";
 import CreateArtistDialog from "../components/artist-dialog/create-artist-dialog";
 import { LuX } from "react-icons/lu";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-type Result<T> = {
-  metadata: any;
-  result: T;
-};
+const formSchema = z.object({
+  name: z.string(),
+  country: z.string(),
+});
 
-interface FormValues {
-  name: string;
-  country: string;
-}
+type FormValues = z.infer<typeof formSchema>;
 
 const Artists = () => {
   const [artists, setArtists] = useState<Artist[] | null>(null);
@@ -46,7 +45,9 @@ const Artists = () => {
   }, [isExpectedRefresh, payload]);
 
   const handleFetchArtists = useCallback(async () => {
-    const response = await sendRequest<Result<Artist[]>>(fetchAssets(payload));
+    const response = await sendRequest<RequestResult<Artist[]>>(
+      fetchAssets(payload)
+    );
 
     if (response.type === "success") {
       setArtists(response?.value?.result);
@@ -65,7 +66,9 @@ const Artists = () => {
     formState: { errors },
     setValue,
     watch,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+  });
 
   const [watchNameField, watchCountryField] = watch(["name", "country"]);
 

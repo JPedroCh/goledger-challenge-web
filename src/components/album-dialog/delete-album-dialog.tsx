@@ -8,83 +8,81 @@ import {
   DialogRoot,
   DialogTitle,
 } from "../dialog";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { DataListItem, DataListRoot } from "../data-list";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
 import { deleteAsset } from "../../services/assets";
 import { Button } from "../button";
 
-interface DeleteArtistDialogProps {
+interface DeleteAlbumDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  artist: Artist | undefined;
+  album: CompleteAlbumInfo | undefined;
   refreshPage: () => void;
 }
-export default function DeleteArtistDialog({
+export default function DeleteAlbumDialog({
   open,
   setOpen,
-  artist,
+  album,
   refreshPage,
-}: DeleteArtistDialogProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+}: DeleteAlbumDialogProps) {
+  const handleDeleteAlbum = useCallback(async (payload: DeleteAlbumPayload) => {
+    const response = await sendRequest<RequestResult<Album>>(
+      deleteAsset(payload)
+    );
 
-  const handleDeleteArtist = useCallback(
-    async (payload: DeleteArtistPayload) => {
-      const response = await sendRequest<RequestResult<Artist>>(
-        deleteAsset(payload)
-      );
-      setIsLoading(false);
-
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Artist deleted succesfully!",
-          type: "success",
-        });
-        setOpen(false);
-        refreshPage();
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to delete the artist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Artist deleted succesfully!",
+        type: "success",
+      });
+      setOpen(false);
+      refreshPage();
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to delete the artist!",
+        type: "error",
+      });
+    }
+  }, []);
 
   const onSubmit = () => {
-    setIsLoading(true);
-    const payload: DeleteArtistPayload = {
+    const payload: DeleteAlbumPayload = {
       key: {
-        "@assetType": "artist",
-        name: artist?.name || "",
+        "@assetType": "album",
+        name: album?.name || "",
+        artist: {
+          "@assetType": "artist",
+          "@key": album?.artist?.["@key"] || "",
+        },
       },
     };
 
-    handleDeleteArtist(payload);
+    handleDeleteAlbum(payload);
   };
 
   return (
     <DialogRoot
-      key={artist?.["@key"]}
+      key={album?.["@key"]}
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Artist</DialogTitle>
+          <DialogTitle>Delete Album</DialogTitle>
         </DialogHeader>
         <DialogBody pb="4">
           <Stack gap="4">
             <Text fontSize={"15px"}>
-              Are you sure you want to delete this artist?
+              Are you sure you want to delete this album?
             </Text>
             <DataListRoot orientation="vertical" mb={4}>
-              <DataListItem label="Name" value={artist?.name} />
-              <DataListItem label="Country" value={artist?.country} />
+              <DataListItem label="Name" value={album?.name} />
+              <DataListItem label="Year" value={album?.year} />
+              <DataListItem label="Artist" value={album?.artist?.name} />
             </DataListRoot>
           </Stack>
         </DialogBody>
@@ -101,7 +99,6 @@ export default function DeleteArtistDialog({
             bgColor="secondary"
             _hover={{ bgColor: "primary" }}
             onClick={() => onSubmit()}
-            loading={isLoading}
           >
             Confirm
           </Button>

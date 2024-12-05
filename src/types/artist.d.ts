@@ -1,12 +1,12 @@
 type Artist = {
-  "@assetType": string;
+  "@assetType": "artist";
   name: string;
   country: string;
   "@key": string;
 };
 
 type ArtistSelector = {
-  "@assetType": string;
+  "@assetType": "artist";
   name?: string;
   country?: string;
   "@key"?: string;

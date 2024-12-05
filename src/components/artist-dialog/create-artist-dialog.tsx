@@ -1,4 +1,4 @@
-import { Button, Input, Stack } from "@chakra-ui/react";
+import { Input, Stack } from "@chakra-ui/react";
 import {
   DialogActionTrigger,
   DialogBody,
@@ -9,11 +9,14 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Field } from "../field";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
 import { createAsset } from "../../services/assets";
+import { Button } from "../button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface CreateArtistDialogProps {
   open: boolean;
@@ -21,10 +24,12 @@ interface CreateArtistDialogProps {
   refreshPage: () => void;
 }
 
-interface FormValues {
-  name: string;
-  country: string;
-}
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name is required" }),
+  country: z.string().min(2, { message: "Country is required" }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateArtistDialog({
   open,
@@ -32,17 +37,23 @@ export default function CreateArtistDialog({
   refreshPage,
 }: CreateArtistDialogProps) {
   const ref = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     resetField,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+  });
 
   const handleCreateArtist = useCallback(
     async (payload: CreateArtistPayload) => {
-      const response = await sendRequest<Result<Artist>>(createAsset(payload));
+      const response = await sendRequest<RequestResult<Artist>>(
+        createAsset(payload)
+      );
+      setIsLoading(false);
 
       if (response.type === "success") {
         toaster.success({
@@ -66,6 +77,7 @@ export default function CreateArtistDialog({
   );
 
   const onSubmit = handleSubmit((data) => {
+    setIsLoading(true);
     const payload: CreateArtistPayload = {
       asset: [
         {
@@ -102,7 +114,7 @@ export default function CreateArtistDialog({
                   placeholder="Insert the artist's name"
                   variant="subtle"
                   color="black"
-                  {...register("name", { required: "Name is required" })}
+                  {...register("name")}
                 />
               </Field>
               <Field
@@ -114,7 +126,7 @@ export default function CreateArtistDialog({
                   placeholder="Insert the artist's country"
                   variant="subtle"
                   color="black"
-                  {...register("country", { required: "Country is required" })}
+                  {...register("country")}
                 />
               </Field>
             </Stack>
@@ -132,6 +144,7 @@ export default function CreateArtistDialog({
               type="submit"
               bgColor="secondary"
               _hover={{ bgColor: "primary" }}
+              loading={isLoading}
             >
               Confirm
             </Button>
