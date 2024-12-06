@@ -100,7 +100,7 @@ export default function CreateArtistDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Artist</DialogTitle>
+          <DialogTitle>Add New Artist</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} id="create-artist-form">
           <DialogBody pb="4">

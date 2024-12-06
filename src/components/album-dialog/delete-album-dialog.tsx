@@ -79,7 +79,7 @@ export default function DeleteAlbumDialog({
             <Text fontSize={"15px"}>
               Are you sure you want to delete this album?
             </Text>
-            <DataListRoot orientation="vertical" mb={4}>
+            <DataListRoot orientation="horizontal" mb={4}>
               <DataListItem label="Name" value={album?.name} />
               <DataListItem label="Year" value={album?.year} />
               <DataListItem label="Artist" value={album?.artist?.name} />

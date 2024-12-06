@@ -1,5 +1,6 @@
 import { Card, IconButton, Stack, Text } from "@chakra-ui/react";
 import { FaEye } from "react-icons/fa";
+import { IoMdAdd } from "react-icons/io";
 import { LuX } from "react-icons/lu";
 import { MdOutlineEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ interface StyledCardProps {
   viewAddress?: string | undefined;
   redirectAddress?: string | undefined;
   setCurrentItem: React.Dispatch<React.SetStateAction<any>>;
+  addAddress?: string | undefined;
   item: object;
 }
 
@@ -23,6 +25,7 @@ export default function StyledCard({
   viewAddress,
   redirectAddress,
   setCurrentItem,
+  addAddress,
   item,
 }: StyledCardProps) {
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ export default function StyledCard({
     <Card.Root
       width="200px"
       shadow="-1px 9px 9px -1px rgba(0,0,0,0.75)"
-      bgColor="secondary"
+      bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
     >
       <Card.Body>
         <Stack gap="0">
@@ -54,6 +57,19 @@ export default function StyledCard({
         </Stack>
       </Card.Body>
       <Card.Footer justifyContent="center">
+        {addAddress && (
+          <IconButton
+            aria-label="Add item"
+            variant="outline"
+            _hover={{ bgColor: "primary" }}
+            onClick={() => {
+              setCurrentItem(item);
+              navigate(addAddress, { state: item });
+            }}
+          >
+            <IoMdAdd color="white" />
+          </IconButton>
+        )}
         {viewAddress !== undefined && (
           <IconButton
             aria-label="View item"

@@ -29,7 +29,9 @@ export default function Navbar() {
         <Text
           color="quaternary"
           onClick={() => navigate("/artists")}
-          textDecor={location.pathname === "/artists" ? "underline" : "none"}
+          textDecor={
+            location.pathname.includes("/artists") ? "underline" : "none"
+          }
           _hover={{ cursor: "pointer" }}
         >
           Artists
@@ -37,7 +39,9 @@ export default function Navbar() {
         <Text
           color="quaternary"
           onClick={() => navigate("/albums")}
-          textDecor={location.pathname === "/albums" ? "underline" : "none"}
+          textDecor={
+            location.pathname.includes("/albums") ? "underline" : "none"
+          }
           _hover={{ cursor: "pointer" }}
         >
           Albums
@@ -45,7 +49,9 @@ export default function Navbar() {
         <Text
           color="quaternary"
           onClick={() => navigate("/songs")}
-          textDecor={location.pathname === "/songs" ? "underline" : "none"}
+          textDecor={
+            location.pathname.includes("/songs") ? "underline" : "none"
+          }
           _hover={{ cursor: "pointer" }}
         >
           Songs
@@ -53,7 +59,9 @@ export default function Navbar() {
         <Text
           color="quaternary"
           onClick={() => navigate("/playlists")}
-          textDecor={location.pathname === "/playlists" ? "underline" : "none"}
+          textDecor={
+            location.pathname.includes("/playlists") ? "underline" : "none"
+          }
           _hover={{ cursor: "pointer" }}
         >
           Playlists

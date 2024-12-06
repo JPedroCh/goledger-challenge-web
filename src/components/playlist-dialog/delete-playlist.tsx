@@ -15,23 +15,23 @@ import { sendRequest } from "../../services/request";
 import { deleteAsset } from "../../services/assets";
 import { Button } from "../button";
 
-interface DeleteArtistDialogProps {
+interface DeletePlaylistDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  artist: Artist | undefined;
+  playlist: Playlist | undefined;
   refreshPage: () => void;
 }
-export default function DeleteArtistDialog({
+export default function DeletePlaylistDialog({
   open,
   setOpen,
-  artist,
+  playlist,
   refreshPage,
-}: DeleteArtistDialogProps) {
+}: DeletePlaylistDialogProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDeleteArtist = useCallback(
-    async (payload: DeleteArtistPayload) => {
-      const response = await sendRequest<RequestResult<Artist>>(
+  const handleDeletePlaylist = useCallback(
+    async (payload: DeletePlaylistPayload) => {
+      const response = await sendRequest<RequestResult<Playlist>>(
         deleteAsset(payload)
       );
       setIsLoading(false);
@@ -57,34 +57,41 @@ export default function DeleteArtistDialog({
 
   const onSubmit = () => {
     setIsLoading(true);
-    const payload: DeleteArtistPayload = {
+    const payload: DeletePlaylistPayload = {
       key: {
-        "@assetType": "artist",
-        name: artist?.name || "",
+        "@assetType": "playlist",
+        name: playlist?.name || "",
       },
     };
 
-    handleDeleteArtist(payload);
+    handleDeletePlaylist(payload);
   };
 
   return (
     <DialogRoot
-      key={artist?.["@key"]}
+      key={playlist?.["@key"]}
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Artist</DialogTitle>
+          <DialogTitle>Delete Playlist</DialogTitle>
         </DialogHeader>
         <DialogBody pb="4">
           <Stack gap="4">
             <Text fontSize={"15px"}>
-              Are you sure you want to delete this artist?
+              Are you sure you want to delete this playlist?
             </Text>
             <DataListRoot orientation="horizontal" mb={4}>
-              <DataListItem label="Name" value={artist?.name} />
-              <DataListItem label="Country" value={artist?.country} />
+              <DataListItem label="Name" value={playlist?.name} />
+              <DataListItem
+                label="Status"
+                value={playlist?.private ? "Private" : "Public"}
+              />
+              <DataListItem
+                label="Number of Songs"
+                value={playlist?.songs.length}
+              />
             </DataListRoot>
           </Stack>
         </DialogBody>

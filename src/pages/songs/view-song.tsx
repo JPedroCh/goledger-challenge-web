@@ -85,7 +85,7 @@ const ViewSong = () => {
           <Text fontSize={"24px"} textAlign="center" mb="1rem">
             Song's Info
           </Text>
-          <DataListRoot orientation="vertical" mb={4}>
+          <DataListRoot orientation="horizontal" mb={4}>
             <DataListItem label="Name" value={currentSong?.name} />
             <DataListItem
               label="Album's Name"

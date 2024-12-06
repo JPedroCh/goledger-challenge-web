@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -17,6 +17,10 @@ import { Field } from "../../components/field";
 import { IoSearchOutline } from "react-icons/io5";
 import { fetchAssets } from "../../services/assets";
 import { LuX } from "react-icons/lu";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import DeletePlaylistDialog from "../../components/playlist-dialog/delete-playlist";
 import {
   SelectContent,
   SelectItem,
@@ -24,30 +28,25 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "../../components/select";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
-import DeleteSongDialog from "../../components/song-dialog/delete-song-dialog";
 
 const formSchema = z.object({
-  albumKey: z.string().array(),
   name: z.string(),
+  privatePlaylist: z.string().array(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const Songs = () => {
-  const [albums, setAlbums] = useState<Album[] | null>(null);
-  const [songs, setSongs] = useState<Song[] | null>(null);
+const Playlists = () => {
+  const [playlists, setPlaylists] = useState<Playlist[] | null>(null);
   const [isExpectedRefresh, setIsExpectedRefresh] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [currentSong, setCurrentSong] = useState<CompleteSongInfo | undefined>(
+  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | undefined>(
     undefined
   );
-  const [payload, setPayload] = useState<FetchSongsPayload>({
+  const [payload, setPayload] = useState<FetchPlaylistPayload>({
     query: {
       selector: {
-        "@assetType": "song",
+        "@assetType": "playlist",
       },
     },
   });
@@ -55,82 +54,24 @@ const Songs = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    handleFetchSongs();
-    handleFetchAlbums();
+    handleFetchPlaylists();
   }, [isExpectedRefresh, payload]);
 
-  const handleFetchSongs = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Song[]>>(
+  const handleFetchPlaylists = useCallback(async () => {
+    const response = await sendRequest<RequestResult<Playlist[]>>(
       fetchAssets(payload)
     );
 
     if (response.type === "success") {
-      setSongs(response?.value?.result);
+      setPlaylists(response?.value?.result);
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to fetch the songs!",
+        description: "It was not possible to fetch the playlists!",
         type: "error",
       });
     }
   }, [payload]);
-
-  const handleFetchAlbums = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Album[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "album",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbums(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the albums!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const albumsList = useMemo(() => {
-    if (albums !== null) {
-      return createListCollection({
-        items: albums?.map((album) => ({
-          label: album.name,
-          value: album["@key"],
-        })),
-      });
-    }
-    return createListCollection({
-      items: [{ label: "", value: "" }],
-    });
-  }, [albums]);
-
-  const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
-    const result: CompleteSongInfo[] =
-      songs?.map((song) => {
-        const matchingAlbum = albums?.find(
-          (album) => album["@key"] === song.album["@key"]
-        );
-        return {
-          "@assetType": "song",
-          "@key": song["@key"] || "",
-          name: song.name || "",
-          album: {
-            "@assetType": "album",
-            "@key": matchingAlbum?.["@key"] || "",
-            name: matchingAlbum?.name || "",
-            year: Number(matchingAlbum?.year || "0"),
-          },
-        };
-      }) || [];
-    return result;
-  }, [songs, albums]);
 
   const {
     register,
@@ -141,24 +82,20 @@ const Songs = () => {
     control,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      albumKey: [],
-    },
   });
-  const [watchNameField, watchAlbumKey] = watch(["name", "albumKey"]);
+  const [watchNameField] = watch(["name"]);
 
   const onSubmit = handleSubmit((data) => {
-    const selector: SongSelector = { "@assetType": "song" };
+    const selector: PlaylistSelector = { "@assetType": "playlist" };
 
     if (data?.name) {
       selector.name = data.name;
     }
 
-    if (data?.albumKey.length !== 0) {
-      selector.album = {
-        "@assetType": "album",
-        "@key": data.albumKey[0],
-      };
+    if (data?.privatePlaylist[0] === "Public") {
+      selector.private = false;
+    } else if (data?.privatePlaylist[0] === "Private") {
+      selector.private = true;
     }
 
     setPayload({
@@ -166,6 +103,14 @@ const Songs = () => {
         selector,
       },
     });
+  });
+
+  const privacyFilterOptions = createListCollection({
+    items: [
+      { label: "Private", value: "Private" },
+      { label: "Public", value: "Public" },
+      { label: "Both", value: "Both" },
+    ],
   });
 
   return (
@@ -189,20 +134,19 @@ const Songs = () => {
               bgColor: "primary",
               color: "white",
             }}
-            onClick={() => navigate("/songs/create")}
+            onClick={() => navigate("/playlists/create")}
           >
-            Add New Song
+            Add New Playlist
           </Button>
           <form onSubmit={onSubmit} id="search-form">
             <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
-              {(watchNameField !== "" || watchAlbumKey?.length !== 0) && (
+              {watchNameField !== "" && (
                 <IconButton
                   aria-label="Remove item"
                   variant="outline"
                   _hover={{ bgColor: "red" }}
                   onClick={() => {
                     setValue("name", "");
-                    setValue("albumKey", []);
                     onSubmit();
                   }}
                 >
@@ -216,38 +160,38 @@ const Songs = () => {
                 color="white"
               >
                 <Input
-                  placeholder="Insert the song's name"
+                  placeholder="Insert the playlist's name"
                   variant="subtle"
                   color="black"
                   {...register("name")}
                 />
               </Field>
               <Field
-                label="Album"
-                invalid={!!errors.albumKey}
-                errorText={errors.albumKey?.message}
+                label="Privacy Filter"
+                invalid={!!errors.privatePlaylist}
+                errorText={errors.privatePlaylist?.message}
                 color="white"
               >
                 <Controller
                   control={control}
-                  name="albumKey"
+                  name="privatePlaylist"
                   render={({ field }) => (
                     <SelectRoot
                       name={field.name}
                       value={field.value}
                       onValueChange={({ value }) => field.onChange(value)}
                       onInteractOutside={() => field.onBlur()}
-                      collection={albumsList}
+                      collection={privacyFilterOptions}
                       variant="subtle"
                       color="black"
                     >
                       <SelectTrigger>
-                        <SelectValueText placeholder="Select album" />
+                        <SelectValueText placeholder="Select Option" />
                       </SelectTrigger>
                       <SelectContent>
-                        {albumsList.items.map((artist) => (
-                          <SelectItem item={artist} key={artist!.value}>
-                            {artist.label}
+                        {privacyFilterOptions.items.map((option) => (
+                          <SelectItem item={option} key={option!.value}>
+                            {option.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -256,7 +200,7 @@ const Songs = () => {
                 />
               </Field>
               <IconButton
-                aria-label="Remove item"
+                aria-label="Search item"
                 bgColor="primary"
                 type="submit"
               >
@@ -267,28 +211,31 @@ const Songs = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {songWithAlbumList?.map((song, index) => (
+        {playlists?.map((playlist, index) => (
           <StyledCard
             key={index}
-            title={song.name}
-            content={[song.album.name || "", song.album.year.toString()]}
-            item={song}
+            title={playlist.name}
+            content={[
+              `${playlist.songs.length.toString()} songs`,
+              playlist.private ? "Private" : "Public",
+            ]}
+            item={playlist}
             cancelButtonFunction={setOpenDeleteDialog}
-            addAddress="/songs/playlist"
-            viewAddress="/songs/view"
-            setCurrentItem={setCurrentSong}
+            redirectAddress="/playlists/edit"
+            viewAddress="/playlists/view"
+            setCurrentItem={setCurrentPlaylist}
           />
         ))}
         <Toaster />
       </Flex>
-      <DeleteSongDialog
+      <DeletePlaylistDialog
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
-        song={currentSong}
+        playlist={currentPlaylist}
         refreshPage={refreshPage}
       />
     </Box>
   );
 };
 
-export default Songs;
+export default Playlists;

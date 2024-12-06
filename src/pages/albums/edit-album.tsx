@@ -95,7 +95,7 @@ const EditAlbum = () => {
             <Text fontSize={"24px"} textAlign="center" mb="1rem">
               Edit Album
             </Text>
-            <DataListRoot orientation="vertical" mb={4}>
+            <DataListRoot orientation="horizontal" mb={4}>
               <DataListItem
                 label="Current Album's Name"
                 value={currentAlbum?.name}
