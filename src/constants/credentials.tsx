@@ -1,4 +1,3 @@
-const username = "psAdmin";
-const password = "goledger";
-
-export const token = btoa(`${username}:${password}`);
+export const token = btoa(
+  `${import.meta.env.VITE_USERNAME}:${import.meta.env.VITE_PASSWORD}`
+);
