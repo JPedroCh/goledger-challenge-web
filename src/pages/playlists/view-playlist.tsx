@@ -16,6 +16,7 @@ import { Button } from "../../components/button";
 import { DataListItem, DataListRoot } from "../../components/data-list";
 import { handleFetchAlbums } from "../../services/albums";
 import { handleFetchSongs } from "../../services/songs";
+import { Skeleton } from "../../components/skeleton";
 
 const ViewPlaylist = () => {
   const [songs, setSongs] = useState<Song[] | null>(null);
@@ -88,26 +89,35 @@ const ViewPlaylist = () => {
             />
           </DataListRoot>
           <Flex gap="2" flexWrap="wrap">
-            {songWithAlbumList.map((item) => (
-              <CardRoot
-                minW="300px"
-                maxW="300px"
-                color="white"
-                bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
-              >
-                <CardHeader>
-                  <CardTitle>{item?.name}</CardTitle>
-                  <CardDescription color="white">
-                    {item.album?.name}
-                  </CardDescription>
-                </CardHeader>
-                <CardBody>
-                  <CardDescription color="white">
-                    {item.album.year}
-                  </CardDescription>
-                </CardBody>
-              </CardRoot>
-            ))}
+            {songs !== null
+              ? songWithAlbumList.map((item) => (
+                  <CardRoot
+                    minW="300px"
+                    maxW="300px"
+                    color="white"
+                    bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
+                  >
+                    <CardHeader>
+                      <CardTitle>{item?.name}</CardTitle>
+                      <CardDescription color="white">
+                        {item.album?.name}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardBody>
+                      <CardDescription color="white">
+                        {item.album.year}
+                      </CardDescription>
+                    </CardBody>
+                  </CardRoot>
+                ))
+              : songWithAlbumList.map((item) => (
+                  <Skeleton
+                    width="300px"
+                    height="150px"
+                    key={item?.["@key"]}
+                    bgColor="primary"
+                  />
+                ))}
           </Flex>
           <Flex gap="4" justifyContent="center">
             <Button

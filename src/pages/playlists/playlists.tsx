@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import DeletePlaylistDialog from "../../components/playlist-dialog/delete-playlist";
 import { handleFetchPlaylists } from "../../services/playlists";
 import PlaylistFilter from "../../components/filter/playlist-filter";
+import { Skeleton } from "../../components/skeleton";
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState<Playlist[] | null>(null);
@@ -54,21 +55,30 @@ const Playlists = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {playlists?.map((playlist, index) => (
-          <StyledCard
-            key={index}
-            title={playlist.name}
-            content={[
-              `${playlist.songs.length.toString()} songs`,
-              playlist.private ? "Private" : "Public",
-            ]}
-            item={playlist}
-            cancelButtonFunction={setOpenDeleteDialog}
-            redirectAddress="/playlists/edit"
-            viewAddress="/playlists/view"
-            setCurrentItem={setCurrentPlaylist}
-          />
-        ))}
+        {playlists !== null
+          ? playlists?.map((playlist, index) => (
+              <StyledCard
+                key={index}
+                title={playlist.name}
+                content={[
+                  `${playlist.songs.length.toString()} songs`,
+                  playlist.private ? "Private" : "Public",
+                ]}
+                item={playlist}
+                cancelButtonFunction={setOpenDeleteDialog}
+                redirectAddress="/playlists/edit"
+                viewAddress="/playlists/view"
+                setCurrentItem={setCurrentPlaylist}
+              />
+            ))
+          : [...Array(20)].map((item) => (
+              <Skeleton
+                width="200px"
+                height="200px"
+                key={item}
+                bgColor="primary"
+              />
+            ))}
         <Toaster />
       </Flex>
       <DeletePlaylistDialog

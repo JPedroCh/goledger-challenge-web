@@ -22,6 +22,7 @@ import { Checkbox } from "../../components/checkbox";
 import { CheckboxCard } from "../../components/checkbox-card";
 import { handleFetchAlbums } from "../../services/albums";
 import { handleFetchSongs } from "../../services/songs";
+import { Skeleton } from "../../components/skeleton";
 
 const formSchema = z.object({
   playlistSongs: z.array(z.string()),
@@ -202,6 +203,15 @@ const CreatePlaylist = () => {
                         bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
                       />
                     ))}
+                    {songsList.length === 0 &&
+                      [...Array(20)].map((item) => (
+                        <Skeleton
+                          width="300px"
+                          height="100px"
+                          key={item}
+                          bgColor="primary"
+                        />
+                      ))}
                   </Flex>
                 </Fieldset.Content>
               </CheckboxGroup>

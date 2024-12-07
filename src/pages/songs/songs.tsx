@@ -8,6 +8,7 @@ import DeleteSongDialog from "../../components/song-dialog/delete-song-dialog";
 import { handleFetchAlbums } from "../../services/albums";
 import { handleFetchSongs } from "../../services/songs";
 import SongFilter from "../../components/filter/song-filter";
+import { Skeleton } from "../../components/skeleton";
 
 const Songs = () => {
   const [albums, setAlbums] = useState<Album[] | null>(null);
@@ -78,18 +79,27 @@ const Songs = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {songWithAlbumList?.map((song, index) => (
-          <StyledCard
-            key={index}
-            title={song.name}
-            content={[song.album.name || "", song.album.year.toString()]}
-            item={song}
-            cancelButtonFunction={setOpenDeleteDialog}
-            addAddress="/songs/playlist"
-            viewAddress="/songs/view"
-            setCurrentItem={setCurrentSong}
-          />
-        ))}
+        {songWithAlbumList.length !== 0
+          ? songWithAlbumList?.map((song, index) => (
+              <StyledCard
+                key={index}
+                title={song.name}
+                content={[song.album.name || "", song.album.year.toString()]}
+                item={song}
+                cancelButtonFunction={setOpenDeleteDialog}
+                addAddress="/songs/playlist"
+                viewAddress="/songs/view"
+                setCurrentItem={setCurrentSong}
+              />
+            ))
+          : [...Array(20)].map((item) => (
+              <Skeleton
+                width="200px"
+                height="200px"
+                key={item}
+                bgColor="primary"
+              />
+            ))}
         <Toaster />
       </Flex>
       <DeleteSongDialog

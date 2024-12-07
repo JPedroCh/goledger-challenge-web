@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { handleFetchArtists } from "../../services/artists";
 import { handleFetchAlbums } from "../../services/albums";
 import AlbumFilter from "../../components/filter/album-filter";
+import { Skeleton } from "../../components/skeleton";
 
 const Albums = () => {
   const [albums, setAlbums] = useState<Album[] | null>(null);
@@ -79,17 +80,26 @@ const Albums = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {albumWithArtistList?.map((album, index) => (
-          <StyledCard
-            key={index}
-            title={album.name}
-            content={[album.artist.name || "", album.year.toString()]}
-            item={album}
-            cancelButtonFunction={setOpenDeleteDialog}
-            redirectAddress="/albums/edit"
-            setCurrentItem={setCurrentAlbum}
-          />
-        ))}
+        {albumWithArtistList.length !== 0
+          ? albumWithArtistList?.map((album, index) => (
+              <StyledCard
+                key={index}
+                title={album.name}
+                content={[album.artist.name || "", album.year.toString()]}
+                item={album}
+                cancelButtonFunction={setOpenDeleteDialog}
+                redirectAddress="/albums/edit"
+                setCurrentItem={setCurrentAlbum}
+              />
+            ))
+          : [...Array(20)].map((item) => (
+              <Skeleton
+                width="200px"
+                height="200px"
+                key={item}
+                bgColor="primary"
+              />
+            ))}
         <Toaster />
       </Flex>
       <DeleteAlbumDialog

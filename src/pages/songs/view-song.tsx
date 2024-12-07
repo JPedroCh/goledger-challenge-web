@@ -7,6 +7,7 @@ import { DataListItem, DataListRoot } from "../../components/data-list";
 import { Button } from "../../components/button";
 import { handleFetchArtistInfo } from "../../services/artists";
 import { handleFetchAlbumInfo } from "../../services/albums";
+import { SkeletonText } from "../../components/skeleton";
 
 const ViewSong = () => {
   const [albumCompleteInfo, setAlbumCompleteInfo] = useState<Album | null>(
@@ -60,14 +61,20 @@ const ViewSong = () => {
               label="Album's Year"
               value={currentSong?.album.year}
             />
-            <DataListItem
-              label="Artist's Name"
-              value={artistCompleteInfo?.name}
-            />
-            <DataListItem
-              label="Artist's Country"
-              value={artistCompleteInfo?.country}
-            />
+            {artistCompleteInfo !== null ? (
+              <>
+                <DataListItem
+                  label="Artist's Name"
+                  value={artistCompleteInfo?.name}
+                />
+                <DataListItem
+                  label="Artist's Country"
+                  value={artistCompleteInfo?.country}
+                />
+              </>
+            ) : (
+              <SkeletonText noOfLines={2} />
+            )}
           </DataListRoot>
           <Flex gap="4" justifyContent="center">
             <Button

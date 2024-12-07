@@ -8,6 +8,7 @@ import DeleteArtistDialog from "../components/artist-dialog/delete-artist-dialog
 import CreateArtistDialog from "../components/artist-dialog/create-artist-dialog";
 import { handleFetchArtists } from "../services/artists";
 import ArtistFilter from "../components/filter/artist-filter";
+import { Skeleton } from "../components/skeleton";
 
 const Artists = () => {
   const [artists, setArtists] = useState<Artist[] | null>(null);
@@ -56,17 +57,26 @@ const Artists = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {artists?.map((artist, index) => (
-          <StyledCard
-            key={index}
-            title={artist.name}
-            content={[artist.country]}
-            item={artist}
-            cancelButtonFunction={setOpenDeleteDialog}
-            editButtonFunction={setOpenEditDialog}
-            setCurrentItem={setCurrentArtist}
-          />
-        ))}
+        {artists !== null
+          ? artists?.map((artist, index) => (
+              <StyledCard
+                key={index}
+                title={artist.name}
+                content={[artist.country]}
+                item={artist}
+                cancelButtonFunction={setOpenDeleteDialog}
+                editButtonFunction={setOpenEditDialog}
+                setCurrentItem={setCurrentArtist}
+              />
+            ))
+          : [...Array(20)].map((item) => (
+              <Skeleton
+                width="200px"
+                height="200px"
+                key={item}
+                bgColor="primary"
+              />
+            ))}
         <Toaster />
       </Flex>
       <EditArtistDialog
