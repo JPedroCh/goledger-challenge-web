@@ -1,40 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
-import {
-  Box,
-  Button,
-  createListCollection,
-  Flex,
-  HStack,
-  IconButton,
-  Input,
-} from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
-import { Controller, useForm } from "react-hook-form";
-import { Field } from "../../components/field";
-import { IoSearchOutline } from "react-icons/io5";
-import { LuX } from "react-icons/lu";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "../../components/select";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import DeleteSongDialog from "../../components/song-dialog/delete-song-dialog";
 import { handleFetchAlbums } from "../../services/albums";
 import { handleFetchSongs } from "../../services/songs";
-
-const formSchema = z.object({
-  albumKey: z.string().array(),
-  name: z.string(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import SongFilter from "../../components/filter/song-filter";
 
 const Songs = () => {
   const [albums, setAlbums] = useState<Album[] | null>(null);
@@ -54,20 +27,6 @@ const Songs = () => {
     handleFetchSongs({ setResult: setSongs, selector: payload });
     handleFetchAlbums({ setResult: setAlbums });
   }, [isExpectedRefresh, payload]);
-
-  const albumsList = useMemo(() => {
-    if (albums !== null) {
-      return createListCollection({
-        items: albums?.map((album) => ({
-          label: album.name,
-          value: album["@key"],
-        })),
-      });
-    }
-    return createListCollection({
-      items: [{ label: "", value: "" }],
-    });
-  }, [albums]);
 
   const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
     const result: CompleteSongInfo[] =
@@ -89,38 +48,6 @@ const Songs = () => {
       }) || [];
     return result;
   }, [songs, albums]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    control,
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      albumKey: [],
-    },
-  });
-  const [watchNameField, watchAlbumKey] = watch(["name", "albumKey"]);
-
-  const onSubmit = handleSubmit((data) => {
-    const selector: SongSelector = { "@assetType": "song" };
-
-    if (data?.name) {
-      selector.name = data.name;
-    }
-
-    if (data?.albumKey.length !== 0) {
-      selector.album = {
-        "@assetType": "album",
-        "@key": data.albumKey[0],
-      };
-    }
-
-    setPayload(selector);
-  });
 
   return (
     <Box minH="100vh" bgGradient={"radialGradient"}>
@@ -147,77 +74,7 @@ const Songs = () => {
           >
             Add New Song
           </Button>
-          <form onSubmit={onSubmit} id="search-form">
-            <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
-              {(watchNameField !== "" || watchAlbumKey?.length !== 0) && (
-                <IconButton
-                  aria-label="Remove item"
-                  variant="outline"
-                  _hover={{ bgColor: "red" }}
-                  onClick={() => {
-                    setValue("name", "");
-                    setValue("albumKey", []);
-                    onSubmit();
-                  }}
-                >
-                  <LuX color="white" />
-                </IconButton>
-              )}
-              <Field
-                label="Name"
-                invalid={!!errors.name}
-                errorText={errors.name?.message}
-                color="white"
-              >
-                <Input
-                  placeholder="Insert the song's name"
-                  variant="subtle"
-                  color="black"
-                  {...register("name")}
-                />
-              </Field>
-              <Field
-                label="Album"
-                invalid={!!errors.albumKey}
-                errorText={errors.albumKey?.message}
-                color="white"
-              >
-                <Controller
-                  control={control}
-                  name="albumKey"
-                  render={({ field }) => (
-                    <SelectRoot
-                      name={field.name}
-                      value={field.value}
-                      onValueChange={({ value }) => field.onChange(value)}
-                      onInteractOutside={() => field.onBlur()}
-                      collection={albumsList}
-                      variant="subtle"
-                      color="black"
-                    >
-                      <SelectTrigger>
-                        <SelectValueText placeholder="Select album" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {albumsList.items.map((artist) => (
-                          <SelectItem item={artist} key={artist!.value}>
-                            {artist.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  )}
-                />
-              </Field>
-              <IconButton
-                aria-label="Remove item"
-                bgColor="primary"
-                type="submit"
-              >
-                <IoSearchOutline color="white" />
-              </IconButton>
-            </HStack>
-          </form>
+          <SongFilter setPayload={setPayload} albums={albums} />
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">

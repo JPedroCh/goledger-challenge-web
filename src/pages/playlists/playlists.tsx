@@ -1,39 +1,12 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
-import {
-  Box,
-  Button,
-  createListCollection,
-  Flex,
-  HStack,
-  IconButton,
-  Input,
-} from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
-import { Controller, useForm } from "react-hook-form";
-import { Field } from "../../components/field";
-import { IoSearchOutline } from "react-icons/io5";
-import { LuX } from "react-icons/lu";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import DeletePlaylistDialog from "../../components/playlist-dialog/delete-playlist";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "../../components/select";
 import { handleFetchPlaylists } from "../../services/playlists";
-
-const formSchema = z.object({
-  name: z.string(),
-  privatePlaylist: z.string().array(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import PlaylistFilter from "../../components/filter/playlist-filter";
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState<Playlist[] | null>(null);
@@ -51,42 +24,6 @@ const Playlists = () => {
   useEffect(() => {
     handleFetchPlaylists({ setResult: setPlaylists, selector: payload });
   }, [isExpectedRefresh, payload]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    control,
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-  });
-  const [watchNameField] = watch(["name"]);
-
-  const onSubmit = handleSubmit((data) => {
-    const selector: PlaylistSelector = { "@assetType": "playlist" };
-
-    if (data?.name) {
-      selector.name = data.name;
-    }
-
-    if (data?.privatePlaylist[0] === "Public") {
-      selector.private = false;
-    } else if (data?.privatePlaylist[0] === "Private") {
-      selector.private = true;
-    }
-
-    setPayload(selector);
-  });
-
-  const privacyFilterOptions = createListCollection({
-    items: [
-      { label: "Private", value: "Private" },
-      { label: "Public", value: "Public" },
-      { label: "Both", value: "Both" },
-    ],
-  });
 
   return (
     <Box minH="100vh" bgGradient={"radialGradient"}>
@@ -113,76 +50,7 @@ const Playlists = () => {
           >
             Add New Playlist
           </Button>
-          <form onSubmit={onSubmit} id="search-form">
-            <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
-              {watchNameField !== "" && (
-                <IconButton
-                  aria-label="Remove item"
-                  variant="outline"
-                  _hover={{ bgColor: "red" }}
-                  onClick={() => {
-                    setValue("name", "");
-                    onSubmit();
-                  }}
-                >
-                  <LuX color="white" />
-                </IconButton>
-              )}
-              <Field
-                label="Name"
-                invalid={!!errors.name}
-                errorText={errors.name?.message}
-                color="white"
-              >
-                <Input
-                  placeholder="Insert the playlist's name"
-                  variant="subtle"
-                  color="black"
-                  {...register("name")}
-                />
-              </Field>
-              <Field
-                label="Privacy Filter"
-                invalid={!!errors.privatePlaylist}
-                errorText={errors.privatePlaylist?.message}
-                color="white"
-              >
-                <Controller
-                  control={control}
-                  name="privatePlaylist"
-                  render={({ field }) => (
-                    <SelectRoot
-                      name={field.name}
-                      value={field.value}
-                      onValueChange={({ value }) => field.onChange(value)}
-                      onInteractOutside={() => field.onBlur()}
-                      collection={privacyFilterOptions}
-                      variant="subtle"
-                      color="black"
-                    >
-                      <SelectTrigger>
-                        <SelectValueText placeholder="Select Option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {privacyFilterOptions.items.map((option) => (
-                          <SelectItem item={option} key={option!.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  )}
-                />
-              </Field>
-              <IconButton
-                aria-label="Search item"
-                bgColor="primary"
-                type="submit"
-              >
-                <IoSearchOutline color="white" />
-              </IconButton>
-            </HStack>
-          </form>
+          <PlaylistFilter setPayload={setPayload} />
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
