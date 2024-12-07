@@ -8,7 +8,7 @@ import {
   DialogRoot,
   DialogTitle,
 } from "../dialog";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { DataListItem, DataListRoot } from "../data-list";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
@@ -29,31 +29,28 @@ export default function DeleteArtistDialog({
 }: DeleteArtistDialogProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDeleteArtist = useCallback(
-    async (payload: DeleteArtistPayload) => {
-      const response = await sendRequest<RequestResult<Artist>>(
-        deleteAsset(payload)
-      );
-      setIsLoading(false);
+  const handleDeleteArtist = async (payload: DeleteArtistPayload) => {
+    const response = await sendRequest<RequestResult<Artist>>(
+      deleteAsset(payload)
+    );
+    setIsLoading(false);
 
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Artist deleted succesfully!",
-          type: "success",
-        });
-        setOpen(false);
-        refreshPage();
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to delete the artist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Artist deleted succesfully!",
+        type: "success",
+      });
+      setOpen(false);
+      refreshPage();
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to delete the artist!",
+        type: "error",
+      });
+    }
+  };
 
   const onSubmit = () => {
     setIsLoading(true);

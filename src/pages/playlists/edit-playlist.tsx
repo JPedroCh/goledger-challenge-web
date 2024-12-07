@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -55,29 +55,26 @@ const EditPlaylist = () => {
     defaultValue: currentPlaylist?.songs?.map((song) => song["@key"]),
   });
 
-  const handleEditPlaylist = useCallback(
-    async (payload: UpdatePlaylistPayload) => {
-      const response = await sendRequest<RequestResult<Playlist>>(
-        updateAsset(payload)
-      );
-      setIsLoading(false);
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Playlist edited succesfully!",
-          type: "success",
-        });
-        navigate("/playlists/");
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to edit the playlist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+  const handleEditPlaylist = async (payload: UpdatePlaylistPayload) => {
+    const response = await sendRequest<RequestResult<Playlist>>(
+      updateAsset(payload)
+    );
+    setIsLoading(false);
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Playlist edited succesfully!",
+        type: "success",
+      });
+      navigate("/playlists/");
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to edit the playlist!",
+        type: "error",
+      });
+    }
+  };
 
   const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
     const songsFromPlaylist = songs?.map((song) => {

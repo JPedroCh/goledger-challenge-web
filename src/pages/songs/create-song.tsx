@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -47,7 +47,7 @@ const CreateSong = () => {
     resolver: zodResolver(formSchema),
   });
 
-  const handleCreateSong = useCallback(async (payload: CreateSongPayload) => {
+  const handleCreateSong = async (payload: CreateSongPayload) => {
     const response = await sendRequest<RequestResult<Song>>(
       createAsset(payload)
     );
@@ -66,7 +66,7 @@ const CreateSong = () => {
         type: "error",
       });
     }
-  }, []);
+  };
 
   const albumsList = useMemo(() => {
     if (albums !== null) {

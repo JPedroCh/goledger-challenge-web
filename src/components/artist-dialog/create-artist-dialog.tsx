@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Field } from "../field";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
@@ -48,33 +48,30 @@ export default function CreateArtistDialog({
     resolver: zodResolver(formSchema),
   });
 
-  const handleCreateArtist = useCallback(
-    async (payload: CreateArtistPayload) => {
-      const response = await sendRequest<RequestResult<Artist>>(
-        createAsset(payload)
-      );
-      setIsLoading(false);
+  const handleCreateArtist = async (payload: CreateArtistPayload) => {
+    const response = await sendRequest<RequestResult<Artist>>(
+      createAsset(payload)
+    );
+    setIsLoading(false);
 
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Artist created succesfully!",
-          type: "success",
-        });
-        setOpen(false);
-        refreshPage();
-        resetField("name");
-        resetField("country");
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to create the artist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Artist created succesfully!",
+        type: "success",
+      });
+      setOpen(false);
+      refreshPage();
+      resetField("name");
+      resetField("country");
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to create the artist!",
+        type: "error",
+      });
+    }
+  };
 
   const onSubmit = handleSubmit((data) => {
     setIsLoading(true);

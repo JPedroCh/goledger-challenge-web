@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -55,29 +55,26 @@ const CreatePlaylist = () => {
     defaultValue: [],
   });
 
-  const handleCreatePlaylist = useCallback(
-    async (payload: CreatePlaylistPayload) => {
-      const response = await sendRequest<RequestResult<Playlist>>(
-        createAsset(payload)
-      );
-      setIsLoading(false);
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Playlist created succesfully!",
-          type: "success",
-        });
-        navigate("/playlists/");
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to create the playlist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+  const handleCreatePlaylist = async (payload: CreatePlaylistPayload) => {
+    const response = await sendRequest<RequestResult<Playlist>>(
+      createAsset(payload)
+    );
+    setIsLoading(false);
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Playlist created succesfully!",
+        type: "success",
+      });
+      navigate("/playlists/");
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to create the playlist!",
+        type: "error",
+      });
+    }
+  };
 
   const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
     const result: CompleteSongInfo[] =

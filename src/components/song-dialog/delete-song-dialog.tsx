@@ -8,7 +8,6 @@ import {
   DialogRoot,
   DialogTitle,
 } from "../dialog";
-import { useCallback } from "react";
 import { DataListItem, DataListRoot } from "../data-list";
 import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
@@ -27,7 +26,7 @@ export default function DeleteSongDialog({
   song,
   refreshPage,
 }: DeleteSongDialogProps) {
-  const handleDeleteSong = useCallback(async (payload: DeleteSongPayload) => {
+  const handleDeleteSong = async (payload: DeleteSongPayload) => {
     const response = await sendRequest<RequestResult<Song>>(
       deleteAsset(payload)
     );
@@ -47,7 +46,7 @@ export default function DeleteSongDialog({
         type: "error",
       });
     }
-  }, []);
+  };
 
   const onSubmit = () => {
     const payload: DeleteSongPayload = {

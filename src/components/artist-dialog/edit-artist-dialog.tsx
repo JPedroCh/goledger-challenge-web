@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Field } from "../field";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DataListItem, DataListRoot } from "../data-list";
 import { toaster, Toaster } from "../toaster";
@@ -52,32 +52,29 @@ export default function EditArtistDialog({
     },
   });
 
-  const handleUpdateArtist = useCallback(
-    async (payload: UpdateArtistPayload) => {
-      const response = await sendRequest<RequestResult<Artist>>(
-        updateAsset(payload)
-      );
-      setIsLoading(false);
+  const handleUpdateArtist = async (payload: UpdateArtistPayload) => {
+    const response = await sendRequest<RequestResult<Artist>>(
+      updateAsset(payload)
+    );
+    setIsLoading(false);
 
-      if (response.type === "success") {
-        toaster.success({
-          title: "Success",
-          description: "Artist edited succesfully!",
-          type: "success",
-        });
-        setOpen(false);
-        refreshPage();
-        resetField("country");
-      } else if (response.type === "error") {
-        toaster.error({
-          title: "Error",
-          description: "It was not possible to edit the artist!",
-          type: "error",
-        });
-      }
-    },
-    []
-  );
+    if (response.type === "success") {
+      toaster.success({
+        title: "Success",
+        description: "Artist edited succesfully!",
+        type: "success",
+      });
+      setOpen(false);
+      refreshPage();
+      resetField("country");
+    } else if (response.type === "error") {
+      toaster.error({
+        title: "Error",
+        description: "It was not possible to edit the artist!",
+        type: "error",
+      });
+    }
+  };
 
   const onSubmit = handleSubmit((data) => {
     setIsLoading(true);

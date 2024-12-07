@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Navbar from "../../components/navbar";
 import { Box, Flex, Input, Stack, Text } from "@chakra-ui/react";
 import { sendRequest } from "../../services/request";
@@ -35,7 +35,7 @@ const EditAlbum = () => {
     },
   });
 
-  const handleEditAlbum = useCallback(async (payload: UpdateAlbumPayload) => {
+  const handleEditAlbum = async (payload: UpdateAlbumPayload) => {
     const response = await sendRequest<RequestResult<Album>>(
       updateAsset(payload)
     );
@@ -56,7 +56,7 @@ const EditAlbum = () => {
         type: "error",
       });
     }
-  }, []);
+  };
 
   const onSubmit = handleSubmit((data) => {
     setIsLoading(true);
