@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -11,12 +11,11 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { sendRequest } from "../../services/request";
-import { toaster } from "../../components/toaster";
-import { fetchAssets } from "../../services/assets";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
 import { DataListItem, DataListRoot } from "../../components/data-list";
+import { handleFetchAlbums } from "../../services/albums";
+import { handleFetchSongs } from "../../services/songs";
 
 const ViewPlaylist = () => {
   const [songs, setSongs] = useState<Song[] | null>(null);
@@ -24,50 +23,6 @@ const ViewPlaylist = () => {
   const location = useLocation();
   const currentPlaylist: Playlist = location.state || {};
   const navigate = useNavigate();
-
-  const handleFetchSongs = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Song[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "song",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setSongs(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the songs!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const handleFetchAlbums = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Album[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "album",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbums(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the albums!",
-        type: "error",
-      });
-    }
-  }, []);
 
   const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
     const songsFromPlaylist = currentPlaylist?.songs?.map((song) => {
@@ -106,8 +61,8 @@ const ViewPlaylist = () => {
   }, [songs, albums]);
 
   useEffect(() => {
-    handleFetchSongs();
-    handleFetchAlbums();
+    handleFetchSongs({ setResult: setSongs });
+    handleFetchAlbums({ setResult: setAlbums });
   }, []);
 
   return (

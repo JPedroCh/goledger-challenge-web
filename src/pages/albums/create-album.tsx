@@ -12,7 +12,7 @@ import { sendRequest } from "../../services/request";
 import { toaster } from "../../components/toaster";
 import { Controller, useForm } from "react-hook-form";
 import { Field } from "../../components/field";
-import { createAsset, fetchAssets } from "../../services/assets";
+import { createAsset } from "../../services/assets";
 import {
   SelectContent,
   SelectItem,
@@ -24,6 +24,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
+import { handleFetchArtists } from "../../services/artists";
 
 const formSchema = z.object({
   artistKey: z.string({ message: "Artist is required" }).array(),
@@ -68,28 +69,6 @@ const CreateAlbum = () => {
     }
   }, []);
 
-  const handleFetchArtists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "artist",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setArtists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artists!",
-        type: "error",
-      });
-    }
-  }, []);
-
   const artistsList = useMemo(() => {
     if (artists !== null) {
       return createListCollection({
@@ -105,7 +84,7 @@ const CreateAlbum = () => {
   }, [artists]);
 
   useEffect(() => {
-    handleFetchArtists();
+    handleFetchArtists({ setResult: setArtists });
   }, []);
 
   const onSubmit = handleSubmit((data) => {

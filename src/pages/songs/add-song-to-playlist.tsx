@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { sendRequest } from "../../services/request";
 import { toaster, Toaster } from "../../components/toaster";
-import { fetchAssets, readAsset, updateAsset } from "../../services/assets";
+import { updateAsset } from "../../services/assets";
 import { useLocation, useNavigate } from "react-router-dom";
 import { DataListItem, DataListRoot } from "../../components/data-list";
 import { Button } from "../../components/button";
@@ -25,6 +25,9 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "../../components/select";
+import { handleFetchArtists } from "../../services/artists";
+import { handleFetchAlbumInfo } from "../../services/albums";
+import { handleFetchPlaylists } from "../../services/playlists";
 
 const formSchema = z.object({
   selectedPlaylist: z.string({ message: "Playlist is required" }).array(),
@@ -36,7 +39,7 @@ const AddSongToPlaylist = () => {
   const [albumCompleteInfo, setAlbumCompleteInfo] = useState<Album | null>(
     null
   );
-  const [artistCompleteInfo, setArtistCompleteInfo] = useState<Artist | null>(
+  const [artistCompleteInfo, setArtistCompleteInfo] = useState<Artist[] | null>(
     null
   );
   const [playlists, setPlaylists] = useState<Playlist[] | null>(null);
@@ -52,72 +55,6 @@ const AddSongToPlaylist = () => {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
-
-  const handleFetchAlbumInfo = useCallback(async () => {
-    const response = await sendRequest<Album>(
-      readAsset({
-        key: {
-          "@assetType": "album",
-          "@key": currentSong?.album?.["@key"],
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbumCompleteInfo(response?.value);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the album info!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const handleFetchArtistInfo = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "artist",
-            "@key": albumCompleteInfo?.artist?.["@key"],
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setArtistCompleteInfo(response?.value?.result?.[0]);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artist info!",
-        type: "error",
-      });
-    }
-  }, [albumCompleteInfo]);
-
-  const handleFetchPlaylists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Playlist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "playlist",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setPlaylists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the playlists!",
-        type: "error",
-      });
-    }
-  }, []);
 
   const handleEditPlaylist = useCallback(
     async (payload: UpdatePlaylistPayload) => {
@@ -144,10 +81,19 @@ const AddSongToPlaylist = () => {
   );
 
   useEffect(() => {
-    handleFetchAlbumInfo();
-    handleFetchPlaylists();
+    handleFetchAlbumInfo({
+      setResult: setAlbumCompleteInfo,
+      key: currentSong?.album?.["@key"],
+    });
+    handleFetchPlaylists({ setResult: setPlaylists });
     if (albumCompleteInfo !== null) {
-      handleFetchArtistInfo();
+      handleFetchArtists({
+        setResult: setArtistCompleteInfo,
+        selector: {
+          "@assetType": "artist",
+          "@key": albumCompleteInfo?.artist?.["@key"],
+        },
+      });
     }
   }, [albumCompleteInfo]);
 
@@ -233,11 +179,11 @@ const AddSongToPlaylist = () => {
               />
               <DataListItem
                 label="Artist's Name"
-                value={artistCompleteInfo?.name}
+                value={artistCompleteInfo?.[0]?.name}
               />
               <DataListItem
                 label="Artist's Country"
-                value={artistCompleteInfo?.country}
+                value={artistCompleteInfo?.[0]?.country}
               />
             </DataListRoot>
             <DataListRoot orientation="horizontal" mb={4}>

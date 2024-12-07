@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -9,13 +9,11 @@ import {
   IconButton,
   Input,
 } from "@chakra-ui/react";
-import { sendRequest } from "../../services/request";
-import { Toaster, toaster } from "../../components/toaster";
+import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
 import { Controller, useForm } from "react-hook-form";
 import { Field } from "../../components/field";
 import { IoSearchOutline } from "react-icons/io5";
-import { fetchAssets } from "../../services/assets";
 import { LuX } from "react-icons/lu";
 import {
   SelectContent,
@@ -28,6 +26,8 @@ import DeleteAlbumDialog from "../../components/album-dialog/delete-album-dialog
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { handleFetchArtists } from "../../services/artists";
+import { handleFetchAlbums } from "../../services/albums";
 
 const formSchema = z.object({
   artistKey: z.string().array(),
@@ -45,58 +45,16 @@ const Albums = () => {
   const [currentAlbum, setCurrentAlbum] = useState<
     CompleteAlbumInfo | undefined
   >(undefined);
-  const [payload, setPayload] = useState<FetchAlbumsPayload>({
-    query: {
-      selector: {
-        "@assetType": "album",
-      },
-    },
+  const [payload, setPayload] = useState<AlbumSelector>({
+    "@assetType": "album",
   });
   const refreshPage = () => setIsExpectedRefresh((prev: boolean) => !prev);
   const navigate = useNavigate();
 
   useEffect(() => {
-    handleFetchAlbums();
-    handleFetchArtists();
+    handleFetchAlbums({ setResult: setAlbums, selector: payload });
+    handleFetchArtists({ setResult: setArtists });
   }, [isExpectedRefresh, payload]);
-
-  const handleFetchArtists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "artist",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setArtists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artists!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const handleFetchAlbums = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Album[]>>(
-      fetchAssets(payload)
-    );
-
-    if (response.type === "success") {
-      setAlbums(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the albums!",
-        type: "error",
-      });
-    }
-  }, [payload]);
 
   const artistsList = useMemo(() => {
     if (artists !== null) {
@@ -171,11 +129,7 @@ const Albums = () => {
       };
     }
 
-    setPayload({
-      query: {
-        selector,
-      },
-    });
+    setPayload(selector);
   });
 
   return (

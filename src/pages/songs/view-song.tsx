@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
 import { Box, Flex, Stack, Text } from "@chakra-ui/react";
-import { sendRequest } from "../../services/request";
-import { toaster, Toaster } from "../../components/toaster";
-import { fetchAssets, readAsset } from "../../services/assets";
+import { Toaster } from "../../components/toaster";
 import { useLocation, useNavigate } from "react-router-dom";
 import { DataListItem, DataListRoot } from "../../components/data-list";
 import { Button } from "../../components/button";
+import { handleFetchArtistInfo } from "../../services/artists";
+import { handleFetchAlbumInfo } from "../../services/albums";
 
 const ViewSong = () => {
   const [albumCompleteInfo, setAlbumCompleteInfo] = useState<Album | null>(
@@ -19,54 +19,19 @@ const ViewSong = () => {
   const currentSong: CompleteSongInfo = location.state || {};
   const navigate = useNavigate();
 
-  const handleFetchAlbumInfo = useCallback(async () => {
-    const response = await sendRequest<Album>(
-      readAsset({
-        key: {
-          "@assetType": "album",
-          "@key": currentSong?.album?.["@key"],
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbumCompleteInfo(response?.value);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the album info!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const handleFetchArtistInfo = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "artist",
-            "@key": albumCompleteInfo?.artist?.["@key"],
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setArtistCompleteInfo(response?.value?.result?.[0]);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artist info!",
-        type: "error",
-      });
-    }
-  }, [albumCompleteInfo]);
-
   useEffect(() => {
-    handleFetchAlbumInfo();
+    handleFetchAlbumInfo({
+      setResult: setAlbumCompleteInfo,
+      key: currentSong?.album?.["@key"],
+    });
     if (albumCompleteInfo !== null) {
-      handleFetchArtistInfo();
+      handleFetchArtistInfo({
+        setResult: setArtistCompleteInfo,
+        selector: {
+          "@assetType": "artist",
+          "@key": albumCompleteInfo?.artist?.["@key"],
+        },
+      });
     }
   }, [albumCompleteInfo]);
 

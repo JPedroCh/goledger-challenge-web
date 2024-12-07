@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -9,13 +9,11 @@ import {
   IconButton,
   Input,
 } from "@chakra-ui/react";
-import { sendRequest } from "../../services/request";
-import { Toaster, toaster } from "../../components/toaster";
+import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
 import { Controller, useForm } from "react-hook-form";
 import { Field } from "../../components/field";
 import { IoSearchOutline } from "react-icons/io5";
-import { fetchAssets } from "../../services/assets";
 import { LuX } from "react-icons/lu";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +26,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "../../components/select";
+import { handleFetchPlaylists } from "../../services/playlists";
 
 const formSchema = z.object({
   name: z.string(),
@@ -43,35 +42,15 @@ const Playlists = () => {
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | undefined>(
     undefined
   );
-  const [payload, setPayload] = useState<FetchPlaylistPayload>({
-    query: {
-      selector: {
-        "@assetType": "playlist",
-      },
-    },
+  const [payload, setPayload] = useState<PlaylistSelector>({
+    "@assetType": "playlist",
   });
   const refreshPage = () => setIsExpectedRefresh((prev: boolean) => !prev);
   const navigate = useNavigate();
 
   useEffect(() => {
-    handleFetchPlaylists();
+    handleFetchPlaylists({ setResult: setPlaylists, selector: payload });
   }, [isExpectedRefresh, payload]);
-
-  const handleFetchPlaylists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Playlist[]>>(
-      fetchAssets(payload)
-    );
-
-    if (response.type === "success") {
-      setPlaylists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the playlists!",
-        type: "error",
-      });
-    }
-  }, [payload]);
 
   const {
     register,
@@ -98,11 +77,7 @@ const Playlists = () => {
       selector.private = true;
     }
 
-    setPayload({
-      query: {
-        selector,
-      },
-    });
+    setPayload(selector);
   });
 
   const privacyFilterOptions = createListCollection({

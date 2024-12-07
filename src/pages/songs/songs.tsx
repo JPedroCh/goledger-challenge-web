@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
 import {
   Box,
@@ -9,13 +9,11 @@ import {
   IconButton,
   Input,
 } from "@chakra-ui/react";
-import { sendRequest } from "../../services/request";
-import { Toaster, toaster } from "../../components/toaster";
+import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
 import { Controller, useForm } from "react-hook-form";
 import { Field } from "../../components/field";
 import { IoSearchOutline } from "react-icons/io5";
-import { fetchAssets } from "../../services/assets";
 import { LuX } from "react-icons/lu";
 import {
   SelectContent,
@@ -28,6 +26,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import DeleteSongDialog from "../../components/song-dialog/delete-song-dialog";
+import { handleFetchAlbums } from "../../services/albums";
+import { handleFetchSongs } from "../../services/songs";
 
 const formSchema = z.object({
   albumKey: z.string().array(),
@@ -44,58 +44,16 @@ const Songs = () => {
   const [currentSong, setCurrentSong] = useState<CompleteSongInfo | undefined>(
     undefined
   );
-  const [payload, setPayload] = useState<FetchSongsPayload>({
-    query: {
-      selector: {
-        "@assetType": "song",
-      },
-    },
+  const [payload, setPayload] = useState<SongSelector>({
+    "@assetType": "song",
   });
   const refreshPage = () => setIsExpectedRefresh((prev: boolean) => !prev);
   const navigate = useNavigate();
 
   useEffect(() => {
-    handleFetchSongs();
-    handleFetchAlbums();
+    handleFetchSongs({ setResult: setSongs, selector: payload });
+    handleFetchAlbums({ setResult: setAlbums });
   }, [isExpectedRefresh, payload]);
-
-  const handleFetchSongs = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Song[]>>(
-      fetchAssets(payload)
-    );
-
-    if (response.type === "success") {
-      setSongs(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the songs!",
-        type: "error",
-      });
-    }
-  }, [payload]);
-
-  const handleFetchAlbums = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Album[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "album",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbums(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the albums!",
-        type: "error",
-      });
-    }
-  }, []);
 
   const albumsList = useMemo(() => {
     if (albums !== null) {
@@ -161,11 +119,7 @@ const Songs = () => {
       };
     }
 
-    setPayload({
-      query: {
-        selector,
-      },
-    });
+    setPayload(selector);
   });
 
   return (

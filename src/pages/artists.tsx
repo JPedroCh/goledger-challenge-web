@@ -1,19 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import { Box, Button, Flex, HStack, IconButton, Input } from "@chakra-ui/react";
-import { sendRequest } from "../services/request";
-import { Toaster, toaster } from "../components/toaster";
+import { Toaster } from "../components/toaster";
 import StyledCard from "../components/card";
 import { useForm } from "react-hook-form";
 import { Field } from "../components/field";
 import { IoSearchOutline } from "react-icons/io5";
 import EditArtistDialog from "../components/artist-dialog/edit-artist-dialog";
-import { fetchAssets } from "../services/assets";
 import DeleteArtistDialog from "../components/artist-dialog/delete-artist-dialog";
 import CreateArtistDialog from "../components/artist-dialog/create-artist-dialog";
 import { LuX } from "react-icons/lu";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { handleFetchArtists } from "../services/artists";
 
 const formSchema = z.object({
   name: z.string(),
@@ -31,34 +30,14 @@ const Artists = () => {
   const [currentArtist, setCurrentArtist] = useState<Artist | undefined>(
     undefined
   );
-  const [payload, setPayload] = useState<FetchArtistPayload>({
-    query: {
-      selector: {
-        "@assetType": "artist",
-      },
-    },
+  const [payload, setPayload] = useState<ArtistSelector>({
+    "@assetType": "artist",
   });
   const refreshPage = () => setIsExpectedRefresh((prev: boolean) => !prev);
 
   useEffect(() => {
-    handleFetchArtists();
+    handleFetchArtists({ setResult: setArtists, selector: payload });
   }, [isExpectedRefresh, payload]);
-
-  const handleFetchArtists = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Artist[]>>(
-      fetchAssets(payload)
-    );
-
-    if (response.type === "success") {
-      setArtists(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the artists!",
-        type: "error",
-      });
-    }
-  }, [payload]);
 
   const {
     register,
@@ -83,11 +62,7 @@ const Artists = () => {
       selector.country = data.country;
     }
 
-    setPayload({
-      query: {
-        selector,
-      },
-    });
+    setPayload(selector);
   });
 
   return (

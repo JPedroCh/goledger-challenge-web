@@ -13,13 +13,15 @@ import { sendRequest } from "../../services/request";
 import { toaster } from "../../components/toaster";
 import { Controller, useController, useForm } from "react-hook-form";
 import { Field } from "../../components/field";
-import { createAsset, fetchAssets } from "../../services/assets";
+import { createAsset } from "../../services/assets";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
 import { Checkbox } from "../../components/checkbox";
 import { CheckboxCard } from "../../components/checkbox-card";
+import { handleFetchAlbums } from "../../services/albums";
+import { handleFetchSongs } from "../../services/songs";
 
 const formSchema = z.object({
   playlistSongs: z.array(z.string()),
@@ -77,50 +79,6 @@ const CreatePlaylist = () => {
     []
   );
 
-  const handleFetchSongs = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Song[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "song",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setSongs(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the songs!",
-        type: "error",
-      });
-    }
-  }, []);
-
-  const handleFetchAlbums = useCallback(async () => {
-    const response = await sendRequest<RequestResult<Album[]>>(
-      fetchAssets({
-        query: {
-          selector: {
-            "@assetType": "album",
-          },
-        },
-      })
-    );
-
-    if (response.type === "success") {
-      setAlbums(response?.value?.result);
-    } else if (response.type === "error") {
-      toaster.error({
-        title: "Error",
-        description: "It was not possible to fetch the albums!",
-        type: "error",
-      });
-    }
-  }, []);
-
   const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
     const result: CompleteSongInfo[] =
       songs?.map((song) => {
@@ -154,8 +112,8 @@ const CreatePlaylist = () => {
   }, [songWithAlbumList]);
 
   useEffect(() => {
-    handleFetchSongs();
-    handleFetchAlbums();
+    handleFetchSongs({ setResult: setSongs });
+    handleFetchAlbums({ setResult: setAlbums });
   }, []);
 
   const onSubmit = handleSubmit((data) => {
