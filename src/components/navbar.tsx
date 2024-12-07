@@ -12,7 +12,11 @@ export default function Navbar() {
       bgColor="primary"
       padding="1rem"
       alignItems="center"
-      zIndex="sticky"
+      position="fixed"
+      top="0"
+      left="0"
+      zIndex="10"
+      width="100%"
     >
       <Text
         fontSize="36px"
