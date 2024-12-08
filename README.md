@@ -1,51 +1,135 @@
-# GoLedger Challenge
+# GoLedger Challenge Web
 
-In this challenge you will create a web interface to a blockchain application. In this application you must implement a streming service-like interface, with artist, album, song and playlist registration.
+This is a React application using TypeScript and Vite. It's called Harmonic Groove and it consumes the API made by Goledger.
 
-# Requirements
+## Prerequisites
 
-- Your application should be able to add/remove/edit and show all artists, albums, songs and playlists;
-- Use **React** or **Next.js** (all UI libraries are allowed);
+Before starting, you will need to have the following prerequisites installed on your system:
 
-## Instructions
+| Name    | Version |
+| ------- | ------- |
+| Node.js | >=20.x  |
+| Npm     | >=10.x  |
+| Docker  | >=20.x  |
 
-- Fork the repository [https://github.com/goledgerdev/goledger-challenge-web](https://github.com/goledgerdev/goledger-challenge-web)
-    - Fork it, do **NOT** clone it, since you will need to send us your forked repository
-    - If you **cannot** fork it, create a private repository and give access to `samuelvenzi` and `jefo3`.
-- Create an web application using React. You will implement the basic operations provided by the API, which are `Create`, `Update`, `Delete` and `Search`.
-- Improve your application with a beautiful UI.
+## Technologies/Dependencies:
 
-## Server
+The technologies used in this project are:
 
-The data are obtained using a rest server at this address: `http://ec2-54-91-215-149.compute-1.amazonaws.com`
+| Name            | Link                             |
+| --------------- | -------------------------------- |
+| React           | https://reactjs.org/             |
+| Vite            | https://vite.dev/                |
+| Axios           | https://github.com/axios/axios   |
+| Chakra UI       | https://www.chakra-ui.com/       |
+| React Hook Form | https://www.react-hook-form.com/ |
+| Zod             | https://zod.dev/                 |
 
-Also, a Swagger with the endpoints specifications for the operations is provided at this address: `http://ec2-54-91-215-149.compute-1.amazonaws.com/api-docs/index.html`.
+## Local Configuration
 
-Note: The API is protected with Basic Auth. The credentials were sent to you by email.
+### 1. Clone the Repo
 
-Tip: execute each operation in the Swagger for information on payload format and endpoint addresses. See examples below.
-
-### Get Schema
-Execute a `getSchema` operation to get information on which asset types are available. Don't forget to authenticate with the credentials provided.
-
-```bash
-curl -X GET "http://ec2-54-91-215-149.compute-1.amazonaws.com/api/query/getSchema" -H "accept: */*"
-```
-
-Execute a getSchema with a payload to get more details on a particula asset.
+Clone this repository to your local environment:
 
 ```bash
-curl -X POST "http://ec2-54-91-215-149.compute-1.amazonaws.com/api/query/getSchema" -H "accept: */*" -H "Content-Type: application/json" -d "{\"assetType\":\"artist\"}"
+git clone https://github.com/JPedroCh/goledger-challenge-web.git
+cd goledger-challenge-web
 ```
-Tip: the same can be done with transactions, using the `getTx` endpoint.
 
-### Search
-Perform a search query on a particular asset type.
+### 2. Install Dependencies
+
+Install the project dependencies using NPM:
+
 ```bash
-curl -X POST "http://ec2-54-91-215-149.compute-1.amazonaws.com/api/query/search" -H "accept: */*" -H "Content-Type: application/json" -d "{\"query\":{\"selector\":{\"@assetType\":\"artist\"}}}"
+npm install
 ```
-Tip: to read a specific asset, you can use the `readAsset` endpoint.
 
-## Complete the challenge
+### 3. Configure the .env File
 
-To complete the challenge, you must send us the link to your forked repository with the code of your application. Please, provide instructions to execute the code.
+Create a `.env` file that includes:
+
+- `VITE_API_URL`: environment variable to define the URL to be used for API requests.
+- `VITE_USERNAME`: environment variable to define the username used to build the token for Basic authentication.
+- `VITE_PASSWORD`: environment variable to define the password used to build the token for Basic authentication.
+
+```env
+VITE_API_URL=http://ec2-54-91-215-149.compute-1.amazonaws.com
+VITE_USERNAME=<username send to the email by Goledger Challenger Web>
+VITE_PASSWORD=goledger=<password send to the email by Goledger Challenger Web>
+```
+
+### 4. Run the Application
+
+Start the application in development mode:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:8080`.
+
+## Docker Configuration
+
+### 1. Build Docker Image
+
+Build the application's Docker image:
+
+```bash
+docker build -t <image_name> .
+```
+
+### 2. Run the Container
+
+Run the container using the following command:
+
+```bash
+docker run -p 8080:8080 <image_name>
+```
+
+The application will be available at `http://localhost:8080`.
+
+## Structure of Folders and Files
+
+```bash
+harmonic-groove/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── constants/
+│   ├── pages/
+│   ├── routes/
+│   ├── services/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── theme.tsx
+│   └── vite-env.d.ts
+├── .env
+├── .gitignore
+├── Dockerfile
+├── package-lock.json
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+### Description of Folders and Files
+
+- `public/` - Directory for images and public files.
+- `src/` - Main directory containing the application's source code.
+- `src/assets/fonts` - Contains the files related to the fonts used.
+- `src/components/` - Contains reusable UI components that can be used throughout the application.
+- `src/constants/` - Contains the files related to constants used in the whole application.
+- `src/pages/` - Contains components representing entire pages of the application.
+- `src/routes/` - Contains the route configuration file defining application routes using `react-router-dom`.
+- `src/services/` - Contains files handling external API calls, business logic, or any service layer logic.
+- `src/App.tsx` - Contains the root component of the application and sets up routes and global state providers.
+- `src/main.tsx` - Renders the `App` component into the DOM.
+- `src/theme.tsx` - File used to create a theme for reusable style variables.
+- `src/vite-env.d.ts` - Provides TypeScript definitions for Vite-specific environment variables.
+- `.env` - Contains environment variables used by the application.
+- `.env.example` - Contains example of .env structure.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
