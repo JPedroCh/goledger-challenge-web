@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
 import { useNavigate } from "react-router-dom";
@@ -29,8 +29,8 @@ const Songs = () => {
     handleFetchAlbums({ setResult: setAlbums });
   }, [isExpectedRefresh, payload]);
 
-  const songWithAlbumList: CompleteSongInfo[] = useMemo(() => {
-    const result: CompleteSongInfo[] =
+  const songWithAlbumList: CompleteSongInfo[] | null = useMemo(() => {
+    const result: CompleteSongInfo[] | null =
       songs?.map((song) => {
         const matchingAlbum = albums?.find(
           (album) => album["@key"] === song.album["@key"]
@@ -46,7 +46,7 @@ const Songs = () => {
             year: Number(matchingAlbum?.year || "0"),
           },
         };
-      }) || [];
+      }) || null;
     return result;
   }, [songs, albums]);
 
@@ -79,7 +79,7 @@ const Songs = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {songWithAlbumList.length !== 0
+        {songWithAlbumList !== null
           ? songWithAlbumList?.map((song, index) => (
               <StyledCard
                 key={index}
@@ -100,6 +100,9 @@ const Songs = () => {
                 bgColor="primary"
               />
             ))}
+        {songWithAlbumList?.length === 0 && (
+          <Text fontSize="20px">No results found!</Text>
+        )}
         <Toaster />
       </Flex>
       <DeleteSongDialog

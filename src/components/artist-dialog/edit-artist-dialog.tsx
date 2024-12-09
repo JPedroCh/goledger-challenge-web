@@ -128,7 +128,6 @@ export default function EditArtistDialog({
                 variant="outline"
                 _hover={{ bgColor: "red", color: "white" }}
                 onClick={() => resetField("country")}
-                loading={isLoading}
               >
                 Cancel
               </Button>
@@ -137,6 +136,7 @@ export default function EditArtistDialog({
               type="submit"
               bgColor="secondary"
               _hover={{ bgColor: "primary" }}
+              loading={isLoading}
             >
               Confirm
             </Button>

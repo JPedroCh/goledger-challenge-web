@@ -13,6 +13,7 @@ import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
 import { deleteAsset } from "../../services/assets";
 import { Button } from "../button";
+import { useState } from "react";
 
 interface DeleteSongDialogProps {
   open: boolean;
@@ -26,10 +27,12 @@ export default function DeleteSongDialog({
   song,
   refreshPage,
 }: DeleteSongDialogProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleDeleteSong = async (payload: DeleteSongPayload) => {
     const response = await sendRequest<RequestResult<Song>>(
       deleteAsset(payload)
     );
+    setIsLoading(false);
 
     if (response.type === "success") {
       toaster.success({
@@ -49,6 +52,7 @@ export default function DeleteSongDialog({
   };
 
   const onSubmit = () => {
+    setIsLoading(true);
     const payload: DeleteSongPayload = {
       key: {
         "@assetType": "song",
@@ -98,6 +102,7 @@ export default function DeleteSongDialog({
             bgColor="secondary"
             _hover={{ bgColor: "primary" }}
             onClick={() => onSubmit()}
+            loading={isLoading}
           >
             Confirm
           </Button>

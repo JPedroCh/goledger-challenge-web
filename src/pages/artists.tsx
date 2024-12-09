@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Toaster } from "../components/toaster";
 import StyledCard from "../components/card";
 import EditArtistDialog from "../components/artist-dialog/edit-artist-dialog";
@@ -77,6 +77,9 @@ const Artists = () => {
                 bgColor="primary"
               />
             ))}
+        {artists?.length === 0 && (
+          <Text fontSize="20px">No results found!</Text>
+        )}
         <Toaster />
       </Flex>
       <EditArtistDialog

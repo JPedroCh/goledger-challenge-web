@@ -64,14 +64,14 @@ const AddSongToPlaylist = () => {
     if (response.type === "success") {
       toaster.success({
         title: "Success",
-        description: "Playlist edited succesfully!",
+        description: "Song added to the playlist succesfully!",
         type: "success",
       });
       navigate("/playlists/");
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to edit the playlist!",
+        description: "It was not possible to add the song to the playlist!",
         type: "error",
       });
     }

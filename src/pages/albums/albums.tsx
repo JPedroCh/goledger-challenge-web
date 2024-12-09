@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Toaster } from "../../components/toaster";
 import StyledCard from "../../components/card";
 import DeleteAlbumDialog from "../../components/album-dialog/delete-album-dialog";
@@ -15,6 +15,7 @@ const Albums = () => {
   const [artists, setArtists] = useState<Artist[] | null>(null);
   const [isExpectedRefresh, setIsExpectedRefresh] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentAlbum, setCurrentAlbum] = useState<
     CompleteAlbumInfo | undefined
   >(undefined);
@@ -25,11 +26,13 @@ const Albums = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setIsLoading(true);
     handleFetchAlbums({ setResult: setAlbums, selector: payload });
     handleFetchArtists({ setResult: setArtists });
   }, [isExpectedRefresh, payload]);
 
   const albumWithArtistList: CompleteAlbumInfo[] = useMemo(() => {
+    setIsLoading(false);
     const result: CompleteAlbumInfo[] =
       albums?.map((album) => {
         const matchingArtist = artists?.find(
@@ -80,7 +83,7 @@ const Albums = () => {
         </Flex>
       </Box>
       <Flex flexDir="row" gap="6" flexWrap="wrap" justifyContent="center">
-        {albumWithArtistList.length !== 0
+        {!isLoading
           ? albumWithArtistList?.map((album, index) => (
               <StyledCard
                 key={index}
@@ -100,6 +103,9 @@ const Albums = () => {
                 bgColor="primary"
               />
             ))}
+        {albumWithArtistList?.length === 0 && (
+          <Text fontSize="20px">No results found!</Text>
+        )}
         <Toaster />
       </Flex>
       <DeleteAlbumDialog
