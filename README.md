@@ -60,7 +60,7 @@ Create a `.env` file that includes:
 ```env
 VITE_API_URL=http://ec2-54-91-215-149.compute-1.amazonaws.com
 VITE_USERNAME=<username send to the email by Goledger Challenger Web>
-VITE_PASSWORD=goledger=<password send to the email by Goledger Challenger Web>
+VITE_PASSWORD=<password send to the email by Goledger Challenger Web>
 ```
 
 ### 4. Run the Application
@@ -75,7 +75,11 @@ The application will be available at `http://localhost:8080`.
 
 ## Docker Configuration
 
-### 1. Build Docker Image
+### 1. Configure the .env File
+
+Follow the example from [Configure the .env File](#3-configure-the-env-file).
+
+### 2. Build Docker Image
 
 Build the application's Docker image:
 
@@ -83,7 +87,7 @@ Build the application's Docker image:
 docker build -t <image_name> .
 ```
 
-### 2. Run the Container
+### 3. Run the Container
 
 Run the container using the following command:
 
