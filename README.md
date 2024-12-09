@@ -2,6 +2,11 @@
 
 This is a React application using TypeScript and Vite. It's called Harmonic Groove and it consumes the API made by Goledger.
 
+## App Demonstration
+
+Watch the demonstration video on Youtube by clicking below:
+[![Watch the demo video on YouTube](https://img.youtube.com/vi/Sj5N9EvUb14/0.jpg)](https://www.youtube.com/watch?v=Sj5N9EvUb14)
+
 ## Prerequisites
 
 Before starting, you will need to have the following prerequisites installed on your system:
@@ -129,7 +134,3 @@ harmonic-groove/
 - `src/vite-env.d.ts` - Provides TypeScript definitions for Vite-specific environment variables.
 - `.env` - Contains environment variables used by the application.
 - `.env.example` - Contains example of .env structure.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
