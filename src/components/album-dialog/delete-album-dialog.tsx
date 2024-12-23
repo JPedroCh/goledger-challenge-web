@@ -14,6 +14,7 @@ import { sendRequest } from "../../services/request";
 import { deleteAsset } from "../../services/assets";
 import { Button } from "../button";
 import { useState } from "react";
+import { errorTreatment } from "../../services/error-treatment";
 
 interface DeleteAlbumDialogProps {
   open: boolean;
@@ -45,7 +46,7 @@ export default function DeleteAlbumDialog({
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to delete the artist!",
+        description: errorTreatment(response.error, "album"),
         type: "error",
       });
     }

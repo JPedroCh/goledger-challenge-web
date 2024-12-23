@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
 import { handleFetchAlbums } from "../../services/albums";
+import { errorTreatment } from "../../services/error-treatment";
 
 const formSchema = z.object({
   albumKey: z.string({ message: "Album is required" }).array(),
@@ -62,7 +63,7 @@ const CreateSong = () => {
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to create the song!",
+        description: errorTreatment(response.error, "song"),
         type: "error",
       });
     }

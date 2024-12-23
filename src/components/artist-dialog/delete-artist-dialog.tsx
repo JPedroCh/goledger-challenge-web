@@ -14,6 +14,7 @@ import { toaster, Toaster } from "../toaster";
 import { sendRequest } from "../../services/request";
 import { deleteAsset } from "../../services/assets";
 import { Button } from "../button";
+import { errorTreatment } from "../../services/error-treatment";
 
 interface DeleteArtistDialogProps {
   open: boolean;
@@ -46,7 +47,7 @@ export default function DeleteArtistDialog({
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to delete the artist!",
+        description: errorTreatment(response.error, "artist"),
         type: "error",
       });
     }

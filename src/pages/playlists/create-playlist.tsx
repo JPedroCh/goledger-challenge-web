@@ -23,6 +23,7 @@ import { CheckboxCard } from "../../components/checkbox-card";
 import { handleFetchAlbums } from "../../services/albums";
 import { handleFetchSongs } from "../../services/songs";
 import { Skeleton } from "../../components/skeleton";
+import { errorTreatment } from "../../services/error-treatment";
 
 const formSchema = z.object({
   playlistSongs: z.array(z.string()),
@@ -71,7 +72,7 @@ const CreatePlaylist = () => {
     } else if (response.type === "error") {
       toaster.error({
         title: "Error",
-        description: "It was not possible to create the playlist!",
+        description: errorTreatment(response.error, "playlist"),
         type: "error",
       });
     }

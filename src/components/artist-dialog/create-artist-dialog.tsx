@@ -17,6 +17,7 @@ import { createAsset } from "../../services/assets";
 import { Button } from "../button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { errorTreatment } from "../../services/error-treatment";
 
 interface CreateArtistDialogProps {
   open: boolean;
@@ -66,8 +67,8 @@ export default function CreateArtistDialog({
       resetField("country");
     } else if (response.type === "error") {
       toaster.error({
-        title: "Error",
-        description: "It was not possible to create the artist!",
+        title: `Error`,
+        description: errorTreatment(response.error, "artist"),
         type: "error",
       });
     }
