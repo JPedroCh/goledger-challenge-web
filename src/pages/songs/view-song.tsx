@@ -42,7 +42,8 @@ const ViewSong = () => {
       <Flex padding="3rem" justifyContent="center">
         <Stack
           gap="4"
-          minW="600px"
+          minW={{ md: "600px" }}
+          maxW={{ smDown: "280px" }}
           bgColor="white"
           padding="4rem"
           borderRadius="50px"
@@ -51,7 +52,10 @@ const ViewSong = () => {
           <Text fontSize={"24px"} textAlign="center" mb="1rem">
             Song's Info
           </Text>
-          <DataListRoot orientation="horizontal" mb={4}>
+          <DataListRoot
+            orientation={{ mdDown: "vertical", md: "horizontal" }}
+            mb={4}
+          >
             <DataListItem label="Name" value={currentSong?.name} />
             <DataListItem
               label="Album's Name"

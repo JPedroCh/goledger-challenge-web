@@ -102,10 +102,11 @@ export default function EditArtistDialog({
         <form onSubmit={onSubmit} id="edit-artist-form">
           <DialogBody pb="4">
             <Stack gap="4">
-              <DataListRoot orientation="horizontal" mb={4}>
+              <DataListRoot
+                orientation={{ mdDown: "vertical", md: "horizontal" }}
+                mb={4}
+              >
                 <DataListItem label="Current Name" value={artist?.name} />
-              </DataListRoot>
-              <DataListRoot orientation="horizontal" mb={4}>
                 <DataListItem label="Current Country" value={artist?.country} />
               </DataListRoot>
               <Field

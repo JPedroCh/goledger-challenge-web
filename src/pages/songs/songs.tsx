@@ -56,8 +56,9 @@ const Songs = () => {
       <Box padding="3rem">
         <Flex
           justifyContent="space-between"
-          flexDir="row"
-          alignItems="flex-end"
+          flexDir={{ mdDown: "column" }}
+          alignItems={{ mdDown: "center", md: "flex-end" }}
+          gap={"1rem"}
         >
           <Button
             marginTop={"50px"}

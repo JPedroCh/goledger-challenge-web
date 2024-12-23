@@ -79,7 +79,10 @@ export default function DeletePlaylistDialog({
             <Text fontSize={"15px"}>
               Are you sure you want to delete this playlist?
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItem label="Name" value={playlist?.name} />
               <DataListItem
                 label="Status"

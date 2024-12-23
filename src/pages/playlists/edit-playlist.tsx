@@ -150,7 +150,8 @@ const EditPlaylist = () => {
         <form onSubmit={onSubmit} id="create-album-form">
           <Stack
             gap="4"
-            minW="600px"
+            minW={{ md: "600px" }}
+            maxW={{ smDown: "280px" }}
             bgColor="white"
             padding="4rem"
             borderRadius="50px"
@@ -159,7 +160,10 @@ const EditPlaylist = () => {
             <Text fontSize={"24px"} textAlign="center" mb="1rem">
               Edit Playlist
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItem
                 label="Playlist's Name"
                 value={currentPlaylist?.name}
@@ -201,8 +205,8 @@ const EditPlaylist = () => {
                         description={item.description}
                         key={item.value}
                         value={item.value}
-                        minW="300px"
-                        maxW="300px"
+                        minW={{ mdDown: "150px", md: "300px" }}
+                        maxW={{ mdDown: "280px", md: "300px" }}
                         color="white"
                         bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
                       />
@@ -210,7 +214,8 @@ const EditPlaylist = () => {
                     {songsList.length === 0 &&
                       [...Array(20)].map((item) => (
                         <Skeleton
-                          width="300px"
+                          minW={{ mdDown: "150px", md: "300px" }}
+                          maxW={{ mdDown: "280px", md: "300px" }}
                           height="100px"
                           key={item}
                           bgColor="primary"

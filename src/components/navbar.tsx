@@ -10,19 +10,20 @@ export default function Navbar() {
       gap="4"
       justifyContent="center"
       bgColor="primary"
-      padding="1rem"
+      padding={{ mdDown: "0.2rem", md: "1rem" }}
       alignItems="center"
       position="fixed"
+      flexDirection={{ lgDown: "column" }}
       top="0"
       left="0"
       zIndex="10"
       width="100%"
     >
       <Text
-        fontSize="36px"
+        fontSize={{ lgDown: "30px", lg: "36px" }}
         color="quaternary"
         fontFamily="heading"
-        position="fixed"
+        position={{ mdTo2xl: "fixed", "2xl": "fixed" }}
         left="1rem"
         onClick={() => navigate("/")}
         _hover={{ cursor: "pointer" }}

@@ -86,7 +86,8 @@ const EditAlbum = () => {
         <form onSubmit={onSubmit} id="edit-album-form">
           <Stack
             gap="4"
-            minW="600px"
+            minW={{ md: "600px" }}
+            maxW={{ smDown: "280px" }}
             bgColor="white"
             padding="4rem"
             borderRadius="50px"
@@ -95,7 +96,10 @@ const EditAlbum = () => {
             <Text fontSize={"24px"} textAlign="center" mb="1rem">
               Edit Album
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItem
                 label="Current Album's Name"
                 value={currentAlbum?.name}

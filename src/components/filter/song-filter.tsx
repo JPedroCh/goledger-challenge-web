@@ -1,6 +1,6 @@
 import {
   createListCollection,
-  HStack,
+  Flex,
   IconButton,
   Input,
 } from "@chakra-ui/react";
@@ -80,7 +80,12 @@ export default function SongFilter({ setPayload, albums }: SongFilterProps) {
 
   return (
     <form onSubmit={onSubmit} id="search-form">
-      <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
+      <Flex
+        justifyContent={"flex-end"}
+        alignItems={"flex-end"}
+        gap={"1rem"}
+        flexWrap={{ mdDown: "wrap", md: "noWrap" }}
+      >
         {(watchNameField !== "" || watchAlbumKey?.length !== 0) && (
           <IconButton
             aria-label="Remove item"
@@ -144,7 +149,7 @@ export default function SongFilter({ setPayload, albums }: SongFilterProps) {
         <IconButton aria-label="Remove item" bgColor="primary" type="submit">
           <IoSearchOutline color="white" />
         </IconButton>
-      </HStack>
+      </Flex>
     </form>
   );
 }

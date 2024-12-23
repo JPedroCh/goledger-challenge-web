@@ -82,7 +82,10 @@ export default function DeleteSongDialog({
             <Text fontSize={"15px"}>
               Are you sure you want to delete this song?
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItem label="Name" value={song?.name} />
               <DataListItem label="Album's Name" value={song?.album?.name} />
               <DataListItem label="Album's Year" value={song?.album?.year} />

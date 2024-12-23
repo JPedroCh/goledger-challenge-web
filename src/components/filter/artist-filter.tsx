@@ -1,4 +1,4 @@
-import { HStack, IconButton, Input } from "@chakra-ui/react";
+import { Flex, IconButton, Input } from "@chakra-ui/react";
 import { Field } from "../field";
 import { useForm } from "react-hook-form";
 import { LuX } from "react-icons/lu";
@@ -46,7 +46,12 @@ export default function ArtistFilter({ setPayload }: ArtistFilterProps) {
 
   return (
     <form onSubmit={onSubmit} id="search-form">
-      <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
+      <Flex
+        justifyContent={"flex-end"}
+        alignItems={"flex-end"}
+        gap={"1rem"}
+        flexWrap={{ mdDown: "wrap", md: "noWrap" }}
+      >
         {(watchNameField !== "" || watchCountryField !== "") && (
           <IconButton
             aria-label="Remove item"
@@ -62,7 +67,6 @@ export default function ArtistFilter({ setPayload }: ArtistFilterProps) {
           </IconButton>
         )}
         <Field
-          unstyled
           label="Name"
           invalid={!!errors.name}
           errorText={errors.name?.message}
@@ -76,7 +80,6 @@ export default function ArtistFilter({ setPayload }: ArtistFilterProps) {
           />
         </Field>
         <Field
-          unstyled
           label="Country"
           invalid={!!errors.country}
           errorText={errors.country?.message}
@@ -92,7 +95,7 @@ export default function ArtistFilter({ setPayload }: ArtistFilterProps) {
         <IconButton aria-label="Remove item" bgColor="primary" type="submit">
           <IoSearchOutline color="white" />
         </IconButton>
-      </HStack>
+      </Flex>
     </form>
   );
 }

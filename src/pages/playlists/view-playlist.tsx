@@ -72,7 +72,8 @@ const ViewPlaylist = () => {
       <Flex padding="3rem" justifyContent="center">
         <Stack
           gap="4"
-          minW="600px"
+          minW={{ md: "600px" }}
+          maxW={{ smDown: "280px" }}
           bgColor="white"
           padding="4rem"
           borderRadius="50px"
@@ -81,7 +82,10 @@ const ViewPlaylist = () => {
           <Text fontSize={"24px"} textAlign="center" mb="1rem">
             View Playlist
           </Text>
-          <DataListRoot orientation="horizontal" mb={4}>
+          <DataListRoot
+            orientation={{ mdDown: "vertical", md: "horizontal" }}
+            mb={4}
+          >
             <DataListItem label="Name" value={currentPlaylist?.name} />
             <DataListItem
               label="Privacy"
@@ -92,8 +96,8 @@ const ViewPlaylist = () => {
             {songs !== null
               ? songWithAlbumList.map((item) => (
                   <CardRoot
-                    minW="300px"
-                    maxW="300px"
+                    minW={{ md: "300px" }}
+                    w={{ mdDown: "280px", md: "300px" }}
                     color="white"
                     bgGradient="linear-gradient(90deg, rgba(25,4,130,1) 0%, rgba(119,82,254,1) 91%);"
                   >
@@ -112,7 +116,8 @@ const ViewPlaylist = () => {
                 ))
               : songWithAlbumList.map((item) => (
                   <Skeleton
-                    width="300px"
+                    minW={{ mdDown: "150px", md: "300px" }}
+                    maxW={{ mdDown: "280px", md: "300px" }}
                     height="150px"
                     key={item?.["@key"]}
                     bgColor="primary"

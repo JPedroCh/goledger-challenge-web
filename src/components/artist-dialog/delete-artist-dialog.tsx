@@ -79,7 +79,10 @@ export default function DeleteArtistDialog({
             <Text fontSize={"15px"}>
               Are you sure you want to delete this artist?
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItem label="Name" value={artist?.name} />
               <DataListItem label="Country" value={artist?.country} />
             </DataListRoot>

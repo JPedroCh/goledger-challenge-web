@@ -153,7 +153,8 @@ const AddSongToPlaylist = () => {
         <form onSubmit={onSubmit} id="create-album-form">
           <Stack
             gap="4"
-            minW="600px"
+            minW={{ md: "600px" }}
+            maxW={{ smDown: "280px" }}
             bgColor="white"
             padding="4rem"
             borderRadius="50px"
@@ -163,7 +164,10 @@ const AddSongToPlaylist = () => {
             <Text fontSize={"24px"} textAlign="center" mb="1rem">
               Add Song To Playlist
             </Text>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItemLabel mt={4}>Song Information</DataListItemLabel>
               <DataListItem label="Name" value={currentSong?.name} />
               <DataListItem
@@ -183,7 +187,10 @@ const AddSongToPlaylist = () => {
                 value={artistCompleteInfo?.[0]?.country}
               />
             </DataListRoot>
-            <DataListRoot orientation="horizontal" mb={4}>
+            <DataListRoot
+              orientation={{ mdDown: "vertical", md: "horizontal" }}
+              mb={4}
+            >
               <DataListItemLabel mt={4}>Select a Playlist</DataListItemLabel>
               <Field
                 label="Artist"
@@ -220,7 +227,7 @@ const AddSongToPlaylist = () => {
               </Field>
             </DataListRoot>
 
-            <Flex gap="4" justifyContent="center">
+            <Flex gap="4" justifyContent="center" pt="4">
               <Button
                 variant="outline"
                 _hover={{ bgColor: "red", color: "white" }}

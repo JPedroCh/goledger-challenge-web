@@ -111,7 +111,8 @@ const CreateSong = () => {
         <form onSubmit={onSubmit} id="create-album-form">
           <Stack
             gap="4"
-            minW="600px"
+            minW={{ md: "600px" }}
+            maxW={{ smDown: "280px" }}
             bgColor="white"
             padding="4rem"
             borderRadius="50px"

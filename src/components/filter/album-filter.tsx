@@ -1,8 +1,8 @@
 import {
   createListCollection,
-  HStack,
   IconButton,
   Input,
+  Flex,
 } from "@chakra-ui/react";
 import { Field } from "../field";
 import { Controller, useForm } from "react-hook-form";
@@ -89,7 +89,12 @@ export default function AlbumFilter({ setPayload, artists }: AlbumFilterProps) {
 
   return (
     <form onSubmit={onSubmit} id="search-form">
-      <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
+      <Flex
+        justifyContent={"flex-end"}
+        alignItems={"flex-end"}
+        gap={"1rem"}
+        flexWrap={{ mdDown: "wrap", md: "noWrap" }}
+      >
         {(watchNameField !== "" ||
           watchCountryField.toString() !== "" ||
           watchArtistKey?.length !== 0) && (
@@ -170,7 +175,7 @@ export default function AlbumFilter({ setPayload, artists }: AlbumFilterProps) {
         <IconButton aria-label="Remove item" bgColor="primary" type="submit">
           <IoSearchOutline color="white" />
         </IconButton>
-      </HStack>
+      </Flex>
     </form>
   );
 }
