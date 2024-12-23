@@ -143,6 +143,7 @@ const CreateAlbum = () => {
                 placeholder="Insert the album's year"
                 variant="subtle"
                 color="black"
+                type="number"
                 {...register("year")}
               />
             </Field>

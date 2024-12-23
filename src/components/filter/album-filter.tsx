@@ -91,7 +91,7 @@ export default function AlbumFilter({ setPayload, artists }: AlbumFilterProps) {
     <form onSubmit={onSubmit} id="search-form">
       <HStack justifyContent={"flex-end"} alignItems={"flex-end"}>
         {(watchNameField !== "" ||
-          watchCountryField !== "" ||
+          watchCountryField.toString() !== "" ||
           watchArtistKey?.length !== 0) && (
           <IconButton
             aria-label="Remove item"
@@ -130,6 +130,7 @@ export default function AlbumFilter({ setPayload, artists }: AlbumFilterProps) {
             placeholder="Insert the album's year"
             variant="subtle"
             color="black"
+            type="number"
             {...register("year")}
           />
         </Field>
