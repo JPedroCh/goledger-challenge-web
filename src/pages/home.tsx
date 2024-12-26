@@ -13,7 +13,14 @@ const Home = () => {
       alignItems="center"
       flexDir="column"
     >
-      <Text fontSize="9xl" color="primary" fontFamily="heading">
+      <Text
+        fontSize={{ smDown: "5xl", sm: "7xl", md: "9xl" }}
+        color="primary"
+        fontFamily="heading"
+        wordWrap="normal"
+        textAlign="center"
+        padding="1rem"
+      >
         Harmonic Groove ♪
       </Text>
       <Button
